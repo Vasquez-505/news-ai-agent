@@ -9,6 +9,7 @@ import os
 from datetime import datetime
 
 import yaml
+from aiohttp import web
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from dotenv import load_dotenv
@@ -70,6 +71,20 @@ async def main():
     await app.updater.start_polling(allowed_updates=["message"])
     logger.info("Telegram bot started")
 
+    # --- Health-check HTTP server (required by Render, used by UptimeRobot) ---
+    async def health(request):
+        return web.Response(text="OK")
+
+    http_app = web.Application()
+    http_app.router.add_get("/", health)
+    http_app.router.add_get("/health", health)
+    port = int(os.getenv("PORT", "10000"))
+    runner = web.AppRunner(http_app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+    logger.info("Health server listening on port %d", port)
+
     # Keep running until interrupted
     try:
         await asyncio.Event().wait()
@@ -77,6 +92,7 @@ async def main():
         pass
     finally:
         scheduler.shutdown(wait=False)
+        await runner.cleanup()
         await app.updater.stop()
         await app.stop()
         await app.shutdown()
