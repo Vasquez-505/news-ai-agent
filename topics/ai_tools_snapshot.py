@@ -1,59 +1,69 @@
-from llm.provider import get_llm
 from datetime import datetime
+from llm.provider import get_llm
 
-PEDRO_TOOLS = """
-Pedro's current tools (from AI_AGENTES_AUTONOMOS.txt context):
-- Codigo / Agentes: Claude Code (Anthropic)
-- Excel: Manual / ChatGPT
-- PowerPoint: Manual / ChatGPT
-- Word: Manual / ChatGPT
-- LaTeX / Overleaf: Overleaf + ChatGPT
-- Knowledge Management: Notion
-- Geracao de imagens: Midjourney / DALL-E
-- Pesquisa / Web search: Perplexity
-- Transcricao / Audio: Whisper / Otter
-- Automacao de tarefas: Make / Zapier
-"""
+PEDRO_TOOLS = {
+    "Código / Agentes":      "Claude Code (Anthropic)",
+    "Excel / Spreadsheets":  "Manual + ChatGPT",
+    "Presentations":         "Manual + ChatGPT",
+    "Documents / Word":      "Manual + ChatGPT",
+    "LaTeX / Overleaf":      "Overleaf + ChatGPT",
+    "Knowledge Management":  "Notion",
+    "Image Generation":      "Midjourney / DALL-E",
+    "Research / Web Search": "Perplexity",
+    "Transcription / Audio": "Whisper / Otter",
+    "Task Automation":       "Make / Zapier",
+}
 
-PROMPT_TEMPLATE = """You are Pedro's morning intelligence briefing assistant.
+PROMPT = """<role>
+You are Pedro's AI tools advisor. Pedro is a technically sophisticated user in Portugal who uses AI tools daily for coding, research, and productivity. He prioritises free or already-subscribed tools and wants honest, actionable comparisons.
+</role>
 
-Today is {date}. Based on the latest AI releases and market knowledge, generate the AI TOOLS SNAPSHOT table.
+<task>
+Today is {date}. Generate the AI TOOLS SNAPSHOT — a daily comparison of Pedro's current tools against today's best alternatives, informed by the latest AI landscape.
+</task>
 
-Pedro's current tools:
-{pedro_tools}
+<pedro_current_tools>
+{tools_list}
+</pedro_current_tools>
 
-Generate a table comparing Pedro's tools against current best-in-class options.
-Use this exact format (plain text, pipe-separated):
-
+<output_format>
+First, write the table header exactly as shown:
 AI TOOLS SNAPSHOT
-Categoria | Pedro usa | Melhor atual | Alternativa | Custo/Plano | Esfoco migracao | Switch? | Motivo
-Codigo / Agentes | ... | ... | ... | ... | Baixo/Medio/Alto | Optimal/Consider/Upgrade/Not using | ...
-Excel | ... | ... | ... | ... | ... | ... | ...
-PowerPoint | ... | ... | ... | ... | ... | ... | ...
-Word | ... | ... | ... | ... | ... | ... | ...
-LaTeX / Overleaf | ... | ... | ... | ... | ... | ... | ...
-Knowledge Management | ... | ... | ... | ... | ... | ... | ...
-Geracao de imagens | ... | ... | ... | ... | ... | ... | ...
-Pesquisa / Web search | ... | ... | ... | ... | ... | ... | ...
-Transcricao / Audio | ... | ... | ... | ... | ... | ... | ...
-Automacao de tarefas | ... | ... | ... | ... | ... | ... | ...
+Categoria | Pedro usa | Melhor atual | Alternativa | Custo/Plano | Esforço migração | Switch? | Motivo
 
-End with: "Takeaway: [1 sentence — most actionable change Pedro could make today]"
+Then write one pipe-separated row per category. Use these exact Switch? values:
+- Optimal → Pedro is already on the best tool
+- Consider → Worth evaluating, not urgent
+- Upgrade → Clear improvement available, should switch
+- Not using → Category not yet covered by AI
 
-Be specific and accurate based on what actually exists today. Keep Motivo to 1 sentence."""
+Keep Motivo to one sentence max. Be specific about pricing (free tier, $X/month).
+
+After the table, write exactly:
+Takeaway: [One sentence — the single most actionable change Pedro could make today to improve his AI toolkit]
+</output_format>
+
+<quality_rules>
+- Base recommendations on tools actually available and publicly released as of today
+- Prioritise free tiers and tools Pedro already pays for (Claude Pro = access to Claude models)
+- Consider that Pedro uses Claude Code — he has access to Anthropic's ecosystem
+- Do not recommend tools that require enterprise contracts or are not available in Portugal/EU
+- Be honest: if Pedro's current tool is genuinely the best, say Optimal
+- Motivo must be specific: "Claude Sonnet 4.5 now matches GPT-4o on coding benchmarks at no extra cost" not "better performance"
+</quality_rules>"""
 
 
 def fetch() -> dict:
     llm = get_llm()
-    prompt = PROMPT_TEMPLATE.format(
-        date=datetime.now().strftime("%B %d, %Y"),
-        pedro_tools=PEDRO_TOOLS,
+    tools_list = "\n".join(f"- {cat}: {tool}" for cat, tool in PEDRO_TOOLS.items())
+    prompt = PROMPT.format(
+        date=datetime.now().strftime("%A, %B %d, %Y"),
+        tools_list=tools_list,
     )
-    summary = llm.generate(prompt)
-
+    content = llm.generate(prompt)
     return {
         "id": "ai_tools_snapshot",
         "title": "🛠️ AI Tools Snapshot",
-        "content": summary,
+        "content": content,
         "sources": [],
     }

@@ -1,45 +1,57 @@
-from search.searcher import multi_search
+from datetime import datetime
 from llm.provider import get_llm
 
-QUERIES = [
-    "top world news today breaking international",
-    "major geopolitical events this week",
-    "global crisis conflict humanitarian news today",
-]
+PROMPT = """<role>
+You are Pedro's morning intelligence briefing assistant. Pedro is an informed, long-term investor based in Portugal who wants sharp, factual global coverage — no spin, no filler.
+</role>
 
-PROMPT_TEMPLATE = """You are Pedro's morning intelligence briefing assistant.
+<task>
+Today is {date}. Search for and write the WORLD NEWS section of this morning's briefing.
+Find the 3–5 most important global stories from the last 24 hours.
+</task>
 
-Based on the search results below, write the WORLD NEWS section of today's briefing.
+<selection_criteria>
+INCLUDE:
+- Major geopolitical events (wars, peace talks, elections with global significance)
+- International economic developments (sanctions, trade deals, financial crises)
+- Significant policy decisions by major governments or international bodies
+- Science or technology breakthroughs with real-world global impact
+- Humanitarian crises or natural disasters affecting large populations
 
-RULES:
-- Maximum 5 bullet points
-- Each bullet: bold the subject at the start (e.g. **Gaza:**), then state the fact AND briefly explain what it means
-- 1-2 sentences per bullet
-- No soft news, no celebrity, no sport
-- End with a single line: "Why it matters: [one sentence on broader impact]"
-- Tone: intelligent, neutral, factual. No hype.
-- For each bullet, note the source in brackets at the end e.g. [Reuters]
+EXCLUDE:
+- Celebrity news, sports, entertainment
+- Local stories with no international significance
+- Opinion pieces or speculation presented as news
+- Anything that happened more than 48 hours ago
 
-SEARCH RESULTS:
-{results}
+SOURCE PREFERENCE: Reuters, AP, BBC, Al Jazeera, Deutsche Welle, Financial Times
+</selection_criteria>
 
-Write the World News section now:"""
+<output_format>
+Write 3–5 bullet points. Exactly this structure for each:
+
+• **[Subject/Country/Actor]:** [What happened — 1 clear sentence]. [What this means or implies — 1 sentence]. [Source Name]
+
+After all bullets, write exactly one line:
+Why it matters: [One sentence on the most significant collective implication of today's top stories]
+</output_format>
+
+<quality_rules>
+- Every bullet must answer BOTH: what happened AND why it matters
+- Be specific: name the actors, the numbers, the timeline
+- If fewer than 3 genuinely significant stories exist today, write fewer — do not pad with minor news
+- No bullet points that only describe the headline without explanation
+- No vague phrases like "experts say" or "could potentially"
+</quality_rules>"""
 
 
 def fetch() -> dict:
     llm = get_llm()
-    results = multi_search(QUERIES, max_per_query=3)
-
-    results_text = "\n\n".join(
-        f"Source: {r['title']} ({r['url']})\n{r['content']}" for r in results
-    )
-
-    prompt = PROMPT_TEMPLATE.format(results=results_text)
-    summary = llm.generate(prompt)
-
+    prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
+    content, sources = llm.generate_with_search(prompt)
     return {
         "id": "general_world_news",
         "title": "🌍 World News",
-        "content": summary,
-        "sources": [{"title": r["title"], "url": r["url"]} for r in results],
+        "content": content,
+        "sources": sources,
     }

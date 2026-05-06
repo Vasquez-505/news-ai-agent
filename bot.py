@@ -347,12 +347,12 @@ async def handle_message(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None
 
     llm = get_llm()
     try:
-        prompt_parts = [SYSTEM_PROMPT, ""]
-        for turn in history:
-            role = "Pedro" if turn["role"] == "user" else "Assistant"
-            prompt_parts.append(f"{role}: {' '.join(turn['parts'])}")
-        prompt_parts.append("Assistant:")
-        reply = llm.generate("\n".join(prompt_parts))
+        # Use Gemini's native Chat API — pass all history except the last user turn
+        reply = llm.chat(
+            history=history[:-1],   # everything before this message
+            message=user_text,
+            system=SYSTEM_PROMPT,
+        )
     except Exception as e:
         logger.error("LLM error: %s", e)
         reply = "Sorry, I had trouble generating a response. Try again."

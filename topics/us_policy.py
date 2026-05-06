@@ -1,50 +1,56 @@
-from search.searcher import multi_search
-from llm.provider import get_llm
 from datetime import datetime
+from llm.provider import get_llm
 
-PROMPT_TEMPLATE = """You are Pedro's morning intelligence briefing assistant.
+PROMPT = """<role>
+You are Pedro's morning intelligence briefing assistant. Pedro is a long-term investor who holds US equities and needs to know about US government actions that have actual legal effect — signed, enacted, or enforced — not political theatre.
+</role>
 
-Based on the search results below, write the UNITED STATES POLICY section of today's briefing.
+<task>
+Today is {date}. Search for and write the UNITED STATES POLICY section of this morning's briefing.
+Find executive orders signed, legislation enacted, or major regulatory actions issued in the last 48 hours.
+</task>
 
-RULES:
-- Only include signed legislation, signed executive orders, or enacted regulatory changes
-- Maximum 5 bullet points
-- Each bullet: bold the subject, name the action, describe its CONCRETE content (agencies involved, what is mandated, what changes), explain the implication
-- Balanced and factual — no political framing, just what was enacted and what it means
-- End with: "Why it matters: [one sentence]"
-- Tone: neutral, factual
-- Note the source in brackets e.g. [White House]
+<selection_criteria>
+INCLUDE:
+- Executive orders signed by the President (whitehouse.gov/presidential-actions)
+- Bills signed into law by Congress
+- Final rules published in the Federal Register
+- Major regulatory actions by the SEC, Fed, CFTC, FTC, DOJ, DOD with significant market or policy impact
+- Sanctions designations or trade actions
 
-SEARCH RESULTS:
-{results}
+EXCLUDE:
+- Bills introduced or passed only one chamber (not yet law)
+- Political speeches, hearings, or statements without binding action
+- Speculation about future policy
+- State-level actions (unless nationally significant)
 
-Write the US Policy section now:"""
+SOURCE PREFERENCE: White House (whitehouse.gov), Federal Register (federalregister.gov), Congress.gov, AP Politics, Reuters US Politics, The Hill
+</selection_criteria>
+
+<output_format>
+Write 3–5 bullet points. Exactly this structure for each:
+
+• **[Action Name/Subject]:** [What was signed or enacted — concrete content: agencies involved, what is mandated, what specifically changes or is prohibited]. [Implication for markets, investors, or US policy direction — 1 sentence]. [Source Name]
+
+After all bullets, write exactly one line:
+Why it matters: [One sentence on the most significant US policy shift this week]
+</output_format>
+
+<quality_rules>
+- Strictly factual and balanced — describe what the action does, not whether it is good or bad
+- Be specific: name the executive order number, the law title, the regulatory agency, the dollar amount
+- Distinguish between actions that are effective immediately vs those with future effective dates
+- If nothing was signed or enacted in the last 48 hours, check the last 7 days and note if the pipeline is quiet
+</quality_rules>"""
 
 
 def fetch() -> dict:
     llm = get_llm()
-    month_year = datetime.now().strftime("%B %Y")
-
-    queries = [
-        f"executive order signed {month_year}",
-        f"US law signed Congress {month_year}",
-        f"US regulation change enacted {month_year}",
-        f"White House policy action {month_year}",
-        f"Federal Register new rule {month_year}",
-    ]
-
-    results = multi_search(queries, max_per_query=3)
-
-    results_text = "\n\n".join(
-        f"Source: {r['title']} ({r['url']})\n{r['content']}" for r in results
-    )
-
-    prompt = PROMPT_TEMPLATE.format(results=results_text)
-    summary = llm.generate(prompt)
-
+    prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
+    content, sources = llm.generate_with_search(prompt)
     return {
         "id": "us_policy",
         "title": "🇺🇸 United States Policy",
-        "content": summary,
-        "sources": [{"title": r["title"], "url": r["url"]} for r in results],
+        "content": content,
+        "sources": sources,
     }
