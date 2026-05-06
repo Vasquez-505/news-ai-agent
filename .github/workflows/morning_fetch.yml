@@ -1,0 +1,59 @@
+name: Morning Briefing — Generate & Deploy
+
+on:
+  schedule:
+    # 05:00 UTC = 05:00 Lisbon (winter/UTC+0) / 06:00 Lisbon (summer/UTC+1)
+    # Either way, content is ready well before Pedro wakes up.
+    - cron: '0 5 * * *'
+  workflow_dispatch: # Manual trigger from the Actions tab
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # Required by peaceiris/actions-gh-pages
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+        run: |
+          python - <<'EOF'
+          import asyncio
+          from pipeline import run_pipeline
+          asyncio.run(run_pipeline(output_dir="output"))
+          EOF
+
+      - name: Create index.html redirect to today's briefing
+        run: |
+          LATEST=$(ls output/briefing_*.html 2>/dev/null | sort | tail -1 | xargs basename 2>/dev/null || echo "")
+          if [ -n "$LATEST" ]; then
+            printf '<meta http-equiv="refresh" content="0; url=%s"><a href="%s">Today'\''s Briefing</a>\n' "$LATEST" "$LATEST" > output/index.html
+            echo "Redirect created → $LATEST"
+          else
+            echo "No briefing HTML found — pipeline may have failed"
+            exit 1
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
+          keep_files: false

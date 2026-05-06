@@ -5,23 +5,26 @@ Called by the APScheduler at 5AM and by the /reload Telegram command.
 
 import logging
 import asyncio
+import yaml
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
+from pathlib import Path
 
 import state
 from dashboard.render import render
 from llm.provider import get_llm
+from utils.greetings import get_greeting
 
 logger = logging.getLogger(__name__)
 
 TOPIC_MODULES = [
-    ("world_news",       "topics.world_news"),
-    ("ai_productivity",  "topics.ai_productivity"),
-    ("portugal_policy",  "topics.portugal_policy"),
-    ("eu_policy",        "topics.eu_policy"),
-    ("us_policy",        "topics.us_policy"),
+    ("world_news",        "topics.world_news"),
+    ("ai_productivity",   "topics.ai_productivity"),
+    ("portugal_policy",   "topics.portugal_policy"),
+    ("eu_policy",         "topics.eu_policy"),
+    ("us_policy",         "topics.us_policy"),
     ("investment_markets","topics.markets_economy"),
-    ("ai_tools_snapshot","topics.ai_tools_snapshot"),
+    ("ai_tools_snapshot", "topics.ai_tools_snapshot"),
 ]
 
 VOICE_SCRIPT_PROMPT = """You are Pedro's morning briefing voice assistant.
@@ -29,13 +32,23 @@ Today is {date}.
 
 Based on the briefing data below, write a ~90-second spoken summary (about 200 words).
 
+STRUCTURE:
+1. Open with this exact greeting (use it word for word): "{greeting}"
+2. Immediately follow with the 7-topic headline reel — one short sentence each, in this exact format:
+   "World: [top global story in one sentence]"
+   "Markets: [biggest market signal today]"
+   "AI: [most important AI release or move]"
+   "Portugal: [most relevant approved law or policy]"
+   "Europe: [top EU decision]"
+   "US: [top signed action or executive order]"
+   "Tools: [notable AI tool change, or 'No significant changes today']"
+3. Close with: "Your full dashboard is ready. What would you like to hear first?"
+
 RULES:
-- Open with: "Good morning, sunshine. Here's your briefing for {date}."
-- Cover only the 3-4 most important items across ALL topics
-- One short sentence per item, flowing conversational prose (not bullet points)
-- Mention the top market signal and one crypto move if notable
-- Close with: "Your full dashboard is ready. Have a great day."
-- Tone: warm, intelligent, slightly dry wit — like a well-read friend
+- The 7 headline lines must follow the exact "Topic: sentence" format above
+- Only cover what's in the briefing data — don't invent
+- Tone: sharp, intelligent, slightly dry — Jarvis-style
+- Total length: ~200 words
 
 BRIEFING DATA:
 {briefing_data}
@@ -49,11 +62,25 @@ def _fetch_topic(module_name: str) -> dict:
     return mod.fetch()
 
 
+def _load_watchlist_file() -> list:
+    """Load watchlist from data/watchlist.yaml at pipeline run time."""
+    wl_path = Path("data/watchlist.yaml")
+    if wl_path.exists():
+        with open(wl_path, encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+            return data.get("watchlist", [])
+    return []
+
+
 async def run_pipeline(output_dir: str = "output", watchlist: list = None) -> str:
     """
     Fetch all topics in parallel, render dashboard HTML, build voice script.
     Returns path to the rendered HTML file.
     """
+    # Always read the latest watchlist from disk unless explicitly overridden
+    if watchlist is None:
+        watchlist = _load_watchlist_file()
+
     state.set_fetch_status("Fetching topics...")
     logger.info("Pipeline started at %s", datetime.now().strftime("%H:%M"))
 
@@ -61,7 +88,6 @@ async def run_pipeline(output_dir: str = "output", watchlist: list = None) -> st
     errors = []
 
     # Fetch all topics concurrently using threads (topic fetchers are sync)
-    loop = asyncio.get_event_loop()
     with ThreadPoolExecutor(max_workers=7) as executor:
         futures = {
             executor.submit(_fetch_topic, module): (topic_id, module)
@@ -76,7 +102,6 @@ async def run_pipeline(output_dir: str = "output", watchlist: list = None) -> st
             except Exception as e:
                 logger.error("Failed to fetch %s: %s", topic_id, e)
                 errors.append(topic_id)
-                # Store a placeholder so the template doesn't break
                 topics[topic_id] = {
                     "id": topic_id,
                     "title": topic_id,
@@ -99,13 +124,15 @@ async def run_pipeline(output_dir: str = "output", watchlist: list = None) -> st
         logger.error("Dashboard render failed: %s", e)
         html_path = ""
 
-    # Build voice script
+    # Build voice script with today's greeting and headline reel format
     logger.info("Generating voice script...")
     try:
         briefing_data = state.get_briefing_context()
         date_str = datetime.now().strftime("%B %d, %Y")
+        greeting = get_greeting()
         prompt = VOICE_SCRIPT_PROMPT.format(
             date=date_str,
+            greeting=greeting,
             briefing_data=briefing_data,
         )
         llm = get_llm()
@@ -115,9 +142,8 @@ async def run_pipeline(output_dir: str = "output", watchlist: list = None) -> st
     except Exception as e:
         logger.error("Voice script generation failed: %s", e)
         state.set_voice_script(
-            f"Good morning, sunshine. Today's briefing is ready. "
-            f"There was an issue generating the spoken summary. "
-            f"Check the dashboard for the full briefing."
+            f"{get_greeting()} Today's briefing is ready but the spoken summary "
+            f"couldn't be generated. Check the dashboard for the full briefing."
         )
 
     state.set_fetch_status(f"Ready. {status_msg}")
