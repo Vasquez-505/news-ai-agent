@@ -19,21 +19,64 @@ SAMPLE_TOPICS = {
 
 Why it matters: The Nvidia print confirms that AI capex is accelerating, not plateauing — the infrastructure build-out has years to run.""",
         "macro": {
-            "raw": (
-                "S&P 500: 5,432.10 (+0.54%)\n"
-                "Nasdaq 100: 19,876.30 (+0.91%)\n"
-                "Gold (USD/oz): 3,480.50 (+1.20%)\n"
-                "Silver (USD/oz): 41.20 (+2.10%)\n"
-                "WTI Oil: 72.40 (+0.33%)\n"
-                "EUR/USD: 1.0842 (-0.21%)\n"
-                "10Y Treasury: 4.28 (+0.03%)\n"
-                "Fed Funds Rate: 4.50%"
-            ),
-            "btc": (
-                "BTC: $103,456 (+2.10%)\n"
-                "ETH: $3,891 (+1.40%)\n"
-                "BTC Dominance: 58.3%"
-            ),
+            "sections": [
+                {
+                    "label": "BROAD INDICES",
+                    "rows": [
+                        {"name": "S&P 500", "price": "5,432.10", "change_pct": 0.54, "rsi": 62.3, "ma200_pct": 8.5, "pct_52w_high": -2.1, "key_indicator": "CAPE: ~39 — expensive (avg 17) | vs 200d MA: +8.5%", "signal": "caution"},
+                        {"name": "Nasdaq 100", "price": "19,876.30", "change_pct": 0.91, "rsi": 65.1, "ma200_pct": 11.2, "pct_52w_high": -1.8, "key_indicator": "RSI: 65 — neutral | vs 200d MA: +11.2%", "signal": "neutral"},
+                        {"name": "VWCE (All-World)", "price": "128.40", "change_pct": 0.48, "rsi": 58.7, "ma200_pct": 6.3, "pct_52w_high": -3.2, "key_indicator": "vs 200d MA: +6.3% — uptrend", "signal": "green"},
+                    ]
+                },
+                {
+                    "label": "MACRO",
+                    "rows": [
+                        {"name": "Gold", "price": "3,480.50", "change_pct": 1.20, "rsi": 71.2, "ma200_pct": 28.4, "pct_52w_high": -0.5, "key_indicator": "Real yield: -0.3% (bullish) | G/S ratio: 84", "signal": "green"},
+                        {"name": "Silver", "price": "41.20", "change_pct": 2.10, "rsi": 68.5, "ma200_pct": 22.1, "pct_52w_high": -1.2, "key_indicator": "G/S ratio: 84 — BUY signal (>80 = silver cheap)", "signal": "green"},
+                        {"name": "WTI Oil", "price": "72.40", "change_pct": 0.33, "rsi": 51.0, "ma200_pct": 2.1, "pct_52w_high": -18.3, "key_indicator": "Fair value — buy zone at $55-60", "signal": "neutral"},
+                        {"name": "EUR/USD", "price": "1.0842", "change_pct": -0.21, "rsi": 44.2, "ma200_pct": -1.8, "pct_52w_high": -5.1, "key_indicator": "Rate differential driven", "signal": "neutral"},
+                        {"name": "DXY (Dollar)", "price": "104.20", "change_pct": 0.18, "rsi": 53.1, "ma200_pct": 1.2, "pct_52w_high": -3.8, "key_indicator": "Strong $ = headwind for gold & EM", "signal": "neutral"},
+                        {"name": "10Y Treasury", "price": "4.28", "change_pct": 0.03, "rsi": 55.0, "ma200_pct": None, "pct_52w_high": None, "key_indicator": "Real yield: +1.8% (bearish for gold) | Yield curve: +0.15% (normal)", "signal": "caution"},
+                        {"name": "VIX (Fear)", "price": "18.40", "change_pct": -3.20, "rsi": 38.0, "ma200_pct": None, "pct_52w_high": None, "key_indicator": "18.4 — elevated (complacency <15, fear >25)", "signal": "neutral"},
+                    ]
+                },
+                {
+                    "label": "TECH / AI",
+                    "rows": [
+                        {"name": "Nvidia", "price": "1,024.30", "change_pct": 3.21, "rsi": 72.1, "ma200_pct": 42.3, "pct_52w_high": -8.2, "key_indicator": "RSI: 72 — overbought | vs 200d MA: +42.3%", "signal": "caution"},
+                        {"name": "Palantir", "price": "87.40", "change_pct": 1.12, "rsi": 64.3, "ma200_pct": 28.7, "pct_52w_high": -14.6, "key_indicator": "RSI: 64 — neutral | Gov vs commercial growth key", "signal": "green"},
+                        {"name": "Vertiv", "price": "112.80", "change_pct": 2.41, "rsi": 67.8, "ma200_pct": 18.4, "pct_52w_high": -21.3, "key_indicator": "RSI: 68 — neutral | AI power infra backlog growing", "signal": "green"},
+                        {"name": "Microsoft", "price": "418.20", "change_pct": 0.62, "rsi": 58.2, "ma200_pct": 9.8, "pct_52w_high": -5.4, "key_indicator": "RSI: 58 — neutral | Azure AI revenue growth key", "signal": "green"},
+                        {"name": "Meta", "price": "564.10", "change_pct": 0.91, "rsi": 61.4, "ma200_pct": 14.2, "pct_52w_high": -12.1, "key_indicator": "RSI: 61 — neutral | AI capex returns materialising", "signal": "green"},
+                        {"name": "Micron", "price": "98.40", "change_pct": 1.84, "rsi": 55.3, "ma200_pct": -4.2, "pct_52w_high": -38.7, "key_indicator": "RSI: 55 — neutral | HBM market share key", "signal": "neutral"},
+                    ]
+                },
+                {
+                    "label": "ENERGY",
+                    "rows": [
+                        {"name": "Constellation Energy", "price": "298.40", "change_pct": 1.82, "rsi": 63.1, "ma200_pct": 24.7, "pct_52w_high": -11.2, "key_indicator": "Nuclear + AI datacenter contracts", "signal": "green"},
+                        {"name": "Cameco", "price": "52.30", "change_pct": 0.71, "rsi": 54.8, "ma200_pct": 8.3, "pct_52w_high": -28.4, "key_indicator": "Uranium demand from new reactors", "signal": "green"},
+                        {"name": "NextEra Energy", "price": "74.20", "change_pct": -0.31, "rsi": 48.2, "ma200_pct": -3.1, "pct_52w_high": -22.6, "key_indicator": "IRA subsidy dependency — policy risk", "signal": "neutral"},
+                        {"name": "Iberdrola", "price": "15.20", "change_pct": 0.40, "rsi": 56.7, "ma200_pct": 12.4, "pct_52w_high": -4.3, "key_indicator": "Grid expansion pipeline solid", "signal": "green"},
+                    ]
+                },
+                {
+                    "label": "CRYPTO",
+                    "rows": [
+                        {"name": "Bitcoin (BTC)", "price": "$103,456", "change_pct": 2.10, "rsi": None, "ma200_pct": None, "pct_52w_high": None, "key_indicator": "Fear & Greed: 62 (Greed) | Day 383 post-halving", "signal": "green"},
+                        {"name": "Ethereum (ETH)", "price": "$3,891", "change_pct": 1.40, "rsi": None, "ma200_pct": None, "pct_52w_high": None, "key_indicator": "ETH/BTC ratio trend — neutral", "signal": "neutral"},
+                        {"name": "BTC Dominance", "price": "58.3%", "change_pct": None, "rsi": None, "ma200_pct": None, "pct_52w_high": None, "key_indicator": "58.3% — BTC dominant (>60% = altcoins depressed)", "signal": "neutral"},
+                    ]
+                },
+            ],
+            "extras": {
+                "gs_ratio": 84.5,
+                "real_yield": -0.30,
+                "yield_curve": 0.15,
+                "fear_greed": {"score": 62, "rating": "Greed"},
+                "days_since_halving": 383,
+                "btc_dominance": 58.3,
+            }
         },
         "sources": [
             {"title": "Reuters Markets", "url": "https://www.reuters.com/markets"},

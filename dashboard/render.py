@@ -67,8 +67,8 @@ def _signal_badge(change_pct: float, indicator: str = "") -> str:
     return f'<span class="signal-badge {cls}">{label}</span>'
 
 
-def _parse_macro_table(raw: str, btc: str) -> str:
-    """Build HTML <tr> rows for the macro snapshot table."""
+def _parse_macro_table_legacy(raw: str, btc: str) -> str:
+    """Legacy: Build HTML <tr> rows for the old 4-column macro snapshot table."""
     rows = []
 
     def _row(name, value, change_str, badge):
@@ -142,6 +142,158 @@ def _parse_macro_table(raw: str, btc: str) -> str:
     if not rows:
         return '<tr><td colspan="4">Market data unavailable</td></tr>'
     return "\n".join(rows)
+
+
+# Keep the old name as an alias so any external callers still work
+_parse_macro_table = _parse_macro_table_legacy
+
+
+def _signal_badge_from_name(signal_str: str, indicator: str = "") -> str:
+    """Map structured signal string to an HTML badge."""
+    mapping = {
+        "green":   ("signal-green",   "BULLISH"),
+        "caution": ("signal-red",     "CAUTION"),
+        "neutral": ("signal-neutral", "NEUTRAL"),
+        "info":    ("signal-neutral", "INFO"),
+    }
+    cls, label = mapping.get(signal_str, ("signal-neutral", "NEUTRAL"))
+    return f'<span class="signal-badge {cls}">{label}</span>'
+
+
+def _build_macro_sections_html(sections_data: list, extras: dict) -> str:
+    """
+    Build HTML <tr> rows for the new 7-column macro table.
+    Columns: Asset | Price | 24h Chg | RSI (14d) | vs 200d MA | Key Indicator | Signal
+    """
+    rows = []
+
+    for section in sections_data:
+        label = section.get("label", "")
+        rows.append(
+            f'<tr class="macro-section-header"><td colspan="7">{label}</td></tr>'
+        )
+        for r in section.get("rows", []):
+            name = r.get("name", "—")
+            price = r.get("price", "—")
+            change_pct = r.get("change_pct")
+            rsi = r.get("rsi")
+            ma200_pct = r.get("ma200_pct")
+            key_indicator = r.get("key_indicator", "—")
+            signal_str = r.get("signal", "neutral")
+
+            # 24h change cell
+            if change_pct is not None:
+                chg_val = f"{change_pct:+.2f}%"
+                if change_pct > 0:
+                    chg_html = f'<span class="chg-positive">{chg_val}</span>'
+                elif change_pct < 0:
+                    chg_html = f'<span class="chg-negative">{chg_val}</span>'
+                else:
+                    chg_html = f'<span class="chg-neutral">{chg_val}</span>'
+            else:
+                chg_html = '<span class="chg-neutral">—</span>'
+
+            # RSI cell
+            if rsi is not None:
+                if rsi > 70:
+                    rsi_html = f'<span class="rsi-overbought">{rsi:.1f} OVERBOUGHT</span>'
+                elif rsi < 30:
+                    rsi_html = f'<span class="rsi-oversold">{rsi:.1f} OVERSOLD</span>'
+                else:
+                    rsi_html = f"{rsi:.1f}"
+            else:
+                rsi_html = "—"
+
+            # vs 200d MA cell
+            if ma200_pct is not None:
+                sign = "+" if ma200_pct >= 0 else ""
+                ma_val = f"{sign}{ma200_pct:.1f}%"
+                if ma200_pct > 0:
+                    ma_html = f'<span class="chg-positive">{ma_val}</span>'
+                elif ma200_pct < 0:
+                    ma_html = f'<span class="chg-negative">{ma_val}</span>'
+                else:
+                    ma_html = ma_val
+            else:
+                ma_html = "—"
+
+            badge = _signal_badge_from_name(signal_str, name)
+
+            rows.append(
+                f"<tr>"
+                f'<td class="indicator-name">{name}</td>'
+                f'<td style="font-family:var(--font-mono);">{price}</td>'
+                f"<td>{chg_html}</td>"
+                f"<td>{rsi_html}</td>"
+                f"<td>{ma_html}</td>"
+                f'<td class="key-ind-cell">{key_indicator}</td>'
+                f"<td>{badge}</td>"
+                f"</tr>"
+            )
+
+    if not rows:
+        return '<tr><td colspan="7">Market data unavailable</td></tr>'
+    return "\n".join(rows)
+
+
+def _build_extras_bar_html(extras: dict) -> str:
+    """Build the derived metrics bar HTML (chips) below the macro table."""
+    if not extras:
+        return ""
+
+    chips = []
+
+    gs = extras.get("gs_ratio")
+    if gs is not None:
+        chips.append(
+            f'<div class="extras-chip">'
+            f'<span class="extras-chip-label">Gold/Silver Ratio</span>'
+            f'<span class="extras-chip-value">{gs:.1f}</span>'
+            f'</div>'
+        )
+
+    ry = extras.get("real_yield")
+    if ry is not None:
+        sign = "+" if ry >= 0 else ""
+        chips.append(
+            f'<div class="extras-chip">'
+            f'<span class="extras-chip-label">Real Yield (10Y)</span>'
+            f'<span class="extras-chip-value">{sign}{ry:.2f}%</span>'
+            f'</div>'
+        )
+
+    yc = extras.get("yield_curve")
+    if yc is not None:
+        sign = "+" if yc >= 0 else ""
+        label = "normal" if yc >= 0 else "inverted"
+        chips.append(
+            f'<div class="extras-chip">'
+            f'<span class="extras-chip-label">Yield Curve</span>'
+            f'<span class="extras-chip-value">{sign}{yc:.2f}% ({label})</span>'
+            f'</div>'
+        )
+
+    fg = extras.get("fear_greed")
+    if fg:
+        score = fg.get("score", "—")
+        rating = fg.get("rating", "—")
+        chips.append(
+            f'<div class="extras-chip">'
+            f'<span class="extras-chip-label">Fear &amp; Greed</span>'
+            f'<span class="extras-chip-value">{score:.0f} — {rating}</span>'
+            f'</div>'
+        )
+
+    dsh = extras.get("days_since_halving")
+    if dsh is not None:
+        chips.append(
+            f'<div class="extras-chip">'
+            f'<span class="extras-chip-label">Days Since BTC Halving</span>'
+            f'<span class="extras-chip-value">{dsh}</span>'
+            f'</div>'
+        )
+
+    return "\n".join(chips) if chips else ""
 
 
 def _extract_sector_alerts(markets_text: str) -> str:
@@ -265,16 +417,30 @@ def render(topics: dict, output_dir: str = "output", watchlist: list = None) -> 
     us       = topics.get("us_policy", {})
     tools    = topics.get("ai_tools_snapshot", {})
 
-    macro_raw = markets.get("macro", {}).get("raw", "")
-    btc_raw   = markets.get("macro", {}).get("btc", "")
-
+    macro_obj = markets.get("macro", {})
     tools_rows, tools_takeaway = _parse_tools_table(tools.get("content", ""))
+
+    # New structured macro data (sections + extras)
+    sections_data = macro_obj.get("sections")
+    extras        = macro_obj.get("extras", {})
+
+    if sections_data is not None:
+        # New format: structured sections
+        macro_table_rows_html = _build_macro_sections_html(sections_data, extras)
+        macro_extras_html     = _build_extras_bar_html(extras)
+    else:
+        # Legacy fallback: parse old raw/btc strings
+        macro_raw = macro_obj.get("raw", "")
+        btc_raw   = macro_obj.get("btc", "")
+        macro_table_rows_html = _parse_macro_table_legacy(macro_raw, btc_raw)
+        macro_extras_html     = ""
 
     template_vars = {
         "date":           date_str,
         "generated_at":   generated_at,
         # Markets
-        "macro_table_rows":  _parse_macro_table(macro_raw, btc_raw),
+        "macro_table_rows":  macro_table_rows_html,
+        "macro_extras_html": macro_extras_html,
         "markets_content":   _extract_sector_alerts(markets.get("content", "")),
         "markets_sources":   markets.get("sources", []),
         # World News

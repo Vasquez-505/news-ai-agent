@@ -471,6 +471,68 @@
     color: var(--ink-light);
   }
 
+  /* ── MACRO SECTION HEADERS ───────────────────────────── */
+  .macro-section-header td {
+    font-family: var(--font-sans);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    padding-top: 0.9rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--cream-mid);
+  }
+  .macro-section-header:first-child td { padding-top: 0.1rem; }
+
+  /* ── EXTRAS BAR ───────────────────────────────────────── */
+  .macro-extras-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--cream-mid);
+  }
+
+  .extras-chip {
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    color: var(--ink-mid);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .extras-chip-label {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-light);
+    font-weight: 600;
+  }
+
+  .extras-chip-value {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  /* ── CHANGE & RSI COLOURING ───────────────────────────── */
+  .chg-positive { color: var(--green); font-weight: 600; }
+  .chg-negative { color: var(--red);   font-weight: 600; }
+  .chg-neutral  { color: var(--ink-mid); }
+
+  .rsi-overbought { color: var(--red);   font-weight: 600; }
+  .rsi-oversold   { color: var(--green); font-weight: 600; }
+
+  /* ── KEY INDICATOR CELL ───────────────────────────────── */
+  .key-ind-cell {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    color: var(--ink-mid);
+    max-width: 280px;
+  }
+
   /* ── RESPONSIVE ───────────────────────────────────────── */
   @media (max-width: 900px) {
     .topics-grid {
@@ -520,9 +582,12 @@
       <table class="macro-table">
         <thead>
           <tr>
-            <th>Indicator</th>
-            <th>Value</th>
-            <th>24h / Change</th>
+            <th>Asset</th>
+            <th>Price</th>
+            <th>24h Chg</th>
+            <th>RSI (14d)</th>
+            <th>vs 200d MA</th>
+            <th>Key Indicator</th>
             <th>Signal</th>
           </tr>
         </thead>
@@ -530,6 +595,9 @@
           {{ macro_table_rows }}
         </tbody>
       </table>
+      {% if macro_extras_html %}
+      <div class="macro-extras-bar">{{ macro_extras_html }}</div>
+      {% endif %}
     </div>
 
     <div class="sector-alerts-label">Sector Alerts</div>
