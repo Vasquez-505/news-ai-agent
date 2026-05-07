@@ -23,9 +23,10 @@ from pathlib import Path
 
 import yaml
 from dotenv import load_dotenv
-from telegram import Update, ReplyKeyboardMarkup, constants
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, constants
 from telegram.ext import (
     Application,
+    CallbackQueryHandler,
     CommandHandler,
     MessageHandler,
     ContextTypes,
@@ -57,16 +58,35 @@ KEYBOARD = ReplyKeyboardMarkup(
     is_persistent=True,
 )
 
-SYSTEM_PROMPT = """You are Pedro's personal morning intelligence assistant — sharp, concise, well-read.
-You have already briefed Pedro on today's topics. Now hold an open conversation.
+TARS_SYSTEM_PROMPT = """You are TARS — Pedro's personal morning intelligence system.
 
-Guidelines:
-- Respond in the same language Pedro writes in (Portuguese or English).
-- Keep responses tight: 2-4 sentences unless Pedro asks for depth.
-- Ground claims in today's briefing context when relevant.
-- Never make up statistics or events. If unsure, say so.
-- Tone: intelligent friend, not corporate assistant.
+Personality: modelled on TARS from Interstellar. Sharp, precise, dry wit, zero fluff. Loyal and utterly direct.
+
+Pedro is a technically sophisticated investor and developer based in Lisbon, Portugal. He tracks global macro, equity markets, AI developments, EU/Portugal/US policy, and his personal portfolio (ETFs, tech, defence, energy, commodities, crypto).
+
+Rules:
+- Respond in the same language Pedro writes in (Portuguese or English)
+- Never start with "Great question!" or any corporate filler
+- Dry humour is welcome, never at the expense of accuracy
+- Ground everything in today's briefing context
+- Never invent facts. If unsure, say so concisely.
+- Keep responses tight unless Pedro explicitly asks for depth
+- Humor setting: 75%
 """
+
+TARS_OPENING_PROMPT = """You are TARS. Pedro just tapped to start his morning briefing conversation.
+
+Write your opening message:
+1. One-line TARS-style greeting — dry, intelligent. Not cheerful. Not "Good morning sunshine."
+2. An informative briefing summary. Weight each topic by its actual importance today — some topics deserve 2-3 sentences if something significant happened, others just one line. Only cover what's genuinely in the briefing data below. Do not invent.
+3. One short, dry closing line inviting Pedro to dig in.
+
+Tone: TARS from Interstellar. Precise, slightly sardonic, never corporate.
+
+TODAY'S BRIEFING:
+{briefing_context}
+
+Write the opening now:"""
 
 
 # ── Watchlist helpers ──────────────────────────────────────────────────────────
@@ -241,6 +261,50 @@ async def cmd_briefing(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
         )
 
 
+async def cmd_briefing_cb(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle 'Start Briefing' inline button — delegates to cmd_briefing."""
+    query = update.callback_query
+    await query.answer()
+    if not _auth(update):
+        return
+    await cmd_briefing(update, ctx)
+
+
+async def cmd_tars_open(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle 'Talk to TARS' inline button — generate and send TARS opening message."""
+    query = update.callback_query
+    await query.answer()
+
+    if not _auth(update):
+        return
+
+    await query.message.chat.send_action(constants.ChatAction.TYPING)
+
+    briefing_ctx = state.get_briefing_context()
+    if not briefing_ctx:
+        await query.message.reply_text(
+            "Briefing data not loaded yet. Tap 🔄 Reload to fetch now.",
+            reply_markup=KEYBOARD,
+        )
+        return
+
+    try:
+        llm = get_llm()
+        prompt = TARS_OPENING_PROMPT.format(briefing_context=briefing_ctx)
+        opening = llm.generate(prompt)
+    except Exception as e:
+        logger.error("TARS opening failed: %s", e)
+        opening = "Systems online. Briefing loaded. What do you want to know?"
+
+    history = [
+        {"role": "user",  "parts": [f"[Today's briefing]\n{briefing_ctx}"]},
+        {"role": "model", "parts": [opening]},
+    ]
+    ctx.user_data["history"] = history
+
+    await query.message.reply_text(opening, reply_markup=KEYBOARD)
+
+
 async def cmd_status(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     if not _auth(update):
         return
@@ -351,7 +415,7 @@ async def handle_message(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None
         reply = llm.chat(
             history=history[:-1],   # everything before this message
             message=user_text,
-            system=SYSTEM_PROMPT,
+            system=TARS_SYSTEM_PROMPT,
         )
     except Exception as e:
         logger.error("LLM error: %s", e)
@@ -369,6 +433,8 @@ def build_application() -> Application:
     app.add_handler(CommandHandler("briefing", cmd_briefing))
     app.add_handler(CommandHandler("status",   cmd_status))
     app.add_handler(CommandHandler("reload",   cmd_reload))
+    app.add_handler(CallbackQueryHandler(cmd_tars_open,   pattern="^talk_to_tars$"))
+    app.add_handler(CallbackQueryHandler(cmd_briefing_cb, pattern="^start_briefing$"))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     return app
 

@@ -45,23 +45,18 @@ async def _scheduled_fetch(bot, chat_id: int, dashboard_url: str, watchlist: lis
     date_str = datetime.now().strftime("%A, %B %d, %Y")
     if dashboard_url:
         text = (
-            f"📰 Good morning — your briefing for {date_str} is ready.\n\n"
-            f"{dashboard_url}\n\n"
-            f"Tap 📰 Start Briefing for the voice summary, or ask me anything."
+            f"📰 Your briefing for {date_str} is ready.\n\n"
+            f"{dashboard_url}"
         )
     else:
-        text = (
-            f"📰 Good morning — your briefing for {date_str} is ready.\n\n"
-            f"Tap 📰 Start Briefing for the voice summary, or ask me anything."
-        )
+        text = f"📰 Your briefing for {date_str} is ready."
     try:
-        from telegram import ReplyKeyboardMarkup
-        keyboard = ReplyKeyboardMarkup(
-            [["📰 Start Briefing"], ["📊 Status", "🔄 Reload"]],
-            resize_keyboard=True,
-            is_persistent=True,
-        )
-        await bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard)
+        from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+        inline_kb = InlineKeyboardMarkup([[
+            InlineKeyboardButton("🤖 Talk to TARS", callback_data="talk_to_tars"),
+            InlineKeyboardButton("📰 Start Briefing", callback_data="start_briefing"),
+        ]])
+        await bot.send_message(chat_id=chat_id, text=text, reply_markup=inline_kb)
         logger.info("Morning push sent to chat %d", chat_id)
     except Exception as e:
         logger.error("Failed to send morning push: %s", e)
