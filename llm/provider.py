@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 import yaml
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -7,6 +8,23 @@ from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 
 load_dotenv()
+
+_RETRY_ATTEMPTS = 3
+_RETRY_WAIT = 35  # seconds — just over the 429 retry_delay Gemini returns
+
+
+def _call_with_retry(fn):
+    """Call fn(), retrying up to _RETRY_ATTEMPTS times on 429 quota errors."""
+    for attempt in range(1, _RETRY_ATTEMPTS + 1):
+        try:
+            return fn()
+        except Exception as e:
+            if "429" in str(e) and attempt < _RETRY_ATTEMPTS:
+                logger.warning("Rate limited (429), waiting %ds before retry %d/%d",
+                               _RETRY_WAIT, attempt, _RETRY_ATTEMPTS - 1)
+                time.sleep(_RETRY_WAIT)
+            else:
+                raise
 
 
 def load_config():
@@ -33,7 +51,7 @@ class GeminiProvider:
 
     def generate(self, prompt: str) -> str:
         """Single-turn generation without search."""
-        response = self.model.generate_content(prompt)
+        response = _call_with_retry(lambda: self.model.generate_content(prompt))
         return response.text.strip()
 
     def generate_with_search(self, prompt: str) -> tuple[str, list[dict]]:
@@ -47,7 +65,7 @@ class GeminiProvider:
                 self.model_name,
                 tools=[{"google_search": {}}],
             )
-            response = model.generate_content(prompt)
+            response = _call_with_retry(lambda: model.generate_content(prompt))
             text = response.text.strip()
 
             sources = []
@@ -85,5 +103,5 @@ class GeminiProvider:
         )
         # Convert history to Gemini format (already compatible)
         session = model.start_chat(history=history)
-        response = session.send_message(message)
+        response = _call_with_retry(lambda: session.send_message(message))
         return response.text.strip()
