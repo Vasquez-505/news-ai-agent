@@ -1,7 +1,10 @@
+import logging
 import os
 import yaml
 import google.generativeai as genai
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -36,30 +39,39 @@ class GeminiProvider:
     def generate_with_search(self, prompt: str) -> tuple[str, list[dict]]:
         """
         Single-turn generation with Google Search grounding.
+        Falls back to plain generate() if grounding fails.
         Returns (text, sources) where sources is a list of {title, url} dicts.
         """
-        model = genai.GenerativeModel(
-            self.model_name,
-            tools=[{"google_search": {}}],
-        )
-        response = model.generate_content(prompt)
-        text = response.text.strip()
-
-        sources = []
         try:
-            chunks = response.candidates[0].grounding_metadata.grounding_chunks
-            seen = set()
-            for chunk in chunks:
-                if hasattr(chunk, "web") and chunk.web:
-                    url = chunk.web.uri or ""
-                    title = chunk.web.title or url
-                    if url and url not in seen:
-                        seen.add(url)
-                        sources.append({"title": title, "url": url})
-        except (AttributeError, IndexError):
-            pass
+            model = genai.GenerativeModel(
+                self.model_name,
+                tools=[{"google_search": {}}],
+            )
+            response = model.generate_content(prompt)
+            text = response.text.strip()
 
-        return text, sources
+            sources = []
+            try:
+                chunks = response.candidates[0].grounding_metadata.grounding_chunks
+                seen = set()
+                for chunk in chunks:
+                    if hasattr(chunk, "web") and chunk.web:
+                        url = chunk.web.uri or ""
+                        title = chunk.web.title or url
+                        if url and url not in seen:
+                            seen.add(url)
+                            sources.append({"title": title, "url": url})
+            except (AttributeError, IndexError):
+                pass
+
+            if not text:
+                raise ValueError("Grounding returned empty response")
+
+            return text, sources
+
+        except Exception as e:
+            logger.warning("Grounding failed (%s), falling back to plain generate", e)
+            return self.generate(prompt), []
 
     def chat(self, history: list[dict], message: str, system: str = "") -> str:
         """

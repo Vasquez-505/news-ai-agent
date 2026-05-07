@@ -24,7 +24,7 @@ def generate_audio(text: str, output_path: str) -> str:
     if provider == "edge-tts":
         voice = config["tts"]["voice"]
         rate = config["tts"].get("rate", "-5%")
-        pitch = config["tts"].get("pitch", "-10Hz")
+        pitch = config["tts"].get("pitch", "-5st")
         # Run in a new thread's event loop to avoid conflicts with an existing loop
         import concurrent.futures
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
