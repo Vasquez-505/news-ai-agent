@@ -14,32 +14,35 @@ load_dotenv()
 # ── TICKER MAP ─────────────────────────────────────────────────────────────────
 SECTIONS = {
     "BROAD INDICES": {
-        "S&P 500":         "^GSPC",
-        "Nasdaq 100":      "^NDX",
-        "VWCE (All-World)":"VWCE.DE",
+        "S&P 500":          "^GSPC",
+        "Nasdaq 100":       "^NDX",
+        "VWCE (All-World)": "VWCE.DE",
     },
     "MACRO": {
-        "Gold":            "GC=F",
-        "Silver":          "SI=F",
-        "WTI Oil":         "CL=F",
-        "EUR/USD":         "EURUSD=X",
-        "DXY (Dollar)":    "DX-Y.NYB",
-        "10Y Treasury":    "^TNX",
-        "VIX (Fear)":      "^VIX",
+        "Gold":           "GC=F",
+        "Silver":         "SI=F",
+        "WTI Oil":        "CL=F",
+        "EUR/USD":        "EURUSD=X",
+        "DXY (Dollar)":   "DX-Y.NYB",
+        "10Y Treasury":   "^TNX",
+        "VIX (Fear)":     "^VIX",
     },
-    "TECH / AI": {
-        "Nvidia":          "NVDA",
-        "Palantir":        "PLTR",
-        "Vertiv":          "VRT",
-        "Microsoft":       "MSFT",
-        "Meta":            "META",
-        "Micron":          "MU",
+    "MAGNIFICENT 7": {
+        "Apple":     "AAPL",
+        "Microsoft": "MSFT",
+        "Alphabet":  "GOOGL",
+        "Amazon":    "AMZN",
+        "Nvidia":    "NVDA",
+        "Meta":      "META",
+        "Tesla":     "TSLA",
     },
-    "ENERGY": {
-        "Constellation Energy": "CEG",
-        "Cameco":               "CCJ",
-        "NextEra Energy":       "NEE",
-        "Iberdrola":            "IBE.MC",
+    "SECTOR PULSE": {
+        "Tech / AI":           "XLK",
+        "Energy":              "XLE",
+        "Oil & Gas":           "XOP",
+        "Aerospace & Defense": "ITA",
+        "FinTech":             "FINX",
+        "Quantum Computing":   "QTUM",
     },
 }
 
@@ -48,7 +51,6 @@ BTC_HALVING_4TH = date(2024, 4, 19)
 # ── HELPERS ────────────────────────────────────────────────────────────────────
 
 def _calc_rsi(closes: pd.Series, period: int = 14) -> float | None:
-    """Calculate RSI using Wilder's exponential smoothing."""
     try:
         delta = closes.diff()
         gain = delta.clip(lower=0)
@@ -64,7 +66,6 @@ def _calc_rsi(closes: pd.Series, period: int = 14) -> float | None:
 
 
 def _calc_ma200_pct(closes: pd.Series, current_price: float) -> float | None:
-    """Return % above/below 200-day MA."""
     try:
         ma200 = closes.rolling(200).mean().iloc[-1]
         if np.isnan(ma200) or ma200 == 0:
@@ -75,7 +76,6 @@ def _calc_ma200_pct(closes: pd.Series, current_price: float) -> float | None:
 
 
 def _calc_52w_high_pct(closes: pd.Series, current_price: float) -> float | None:
-    """Return % below 52-week high (negative value)."""
     try:
         high_52w = closes.tail(252).max()
         if np.isnan(high_52w) or high_52w == 0:
@@ -85,8 +85,17 @@ def _calc_52w_high_pct(closes: pd.Series, current_price: float) -> float | None:
         return None
 
 
+def _calc_1m_return(closes: pd.Series) -> float | None:
+    try:
+        month = closes.tail(22)
+        if len(month) < 2:
+            return None
+        return round(((float(month.iloc[-1]) - float(month.iloc[0])) / float(month.iloc[0])) * 100, 2)
+    except Exception:
+        return None
+
+
 def _fmt_price(price: float, ticker: str = "") -> str:
-    """Format a price value sensibly."""
     try:
         if ticker in ("^TNX", "^VIX", "EURUSD=X", "DX-Y.NYB"):
             return f"{price:.2f}"
@@ -102,15 +111,12 @@ def _fmt_price(price: float, ticker: str = "") -> str:
 # ── SIGNAL LOGIC ───────────────────────────────────────────────────────────────
 
 def _signal(name: str, change_pct: float | None, rsi: float | None) -> str:
-    """Derive signal string from name, change % and RSI."""
-    name_lower = name.lower()
+    n = name.lower()
 
-    if "vix" in name_lower:
-        if change_pct is not None and change_pct > 10:
-            return "caution"
-        return "neutral"
+    if "vix" in n:
+        return "caution" if (change_pct is not None and change_pct > 10) else "neutral"
 
-    if "treasury" in name_lower or "10y" in name_lower:
+    if "treasury" in n or "10y" in n:
         if change_pct is not None:
             if change_pct > 0.05:
                 return "caution"
@@ -140,148 +146,119 @@ def _key_indicator(
     price: float | None,
     rsi: float | None,
     ma200_pct: float | None,
+    pct_52w_high: float | None,
     real_yield: float | None,
     gs_ratio: float | None,
     fear_greed: dict | None,
     days_since_halving: int | None,
     btc_dominance: float | None,
+    vs_spy_1m: float | None = None,
+    section: str = "",
 ) -> str:
     n = name.lower()
 
-    def ma_str():
-        if ma200_pct is not None:
-            sign = "+" if ma200_pct >= 0 else ""
-            return f"vs 200d MA: {sign}{ma200_pct:.1f}%"
-        return ""
+    # ── MAGNIFICENT 7: key metric = % below 52-week high ──
+    if section == "MAGNIFICENT 7":
+        if pct_52w_high is not None:
+            if pct_52w_high >= -1.0:
+                return "Near 52W high"
+            return f"{pct_52w_high:.1f}% below 52W high"
+        return "—"
 
-    def rsi_str():
-        if rsi is not None:
-            return f"RSI: {rsi:.0f}"
-        return ""
+    # ── SECTOR PULSE: key metric = 1-month performance vs SPY ──
+    if section == "SECTOR PULSE":
+        if vs_spy_1m is not None:
+            sign = "+" if vs_spy_1m >= 0 else ""
+            label = "outperforming" if vs_spy_1m > 0.5 else ("underperforming" if vs_spy_1m < -0.5 else "in line with")
+            return f"{sign}{vs_spy_1m:.1f}% vs SPY (1M) — {label} market"
+        return "—"
 
-    if "s&p 500" in n or "sp500" in n or "gspc" in n:
-        ma = ma_str()
-        return f"CAPE: ~39 — expensive (avg 17) | {ma}" if ma else "CAPE: ~39 — expensive (avg 17)"
+    # ── BROAD INDICES ──
+    if "s&p 500" in n:
+        m = f"+{ma200_pct:.1f}% vs 200d MA" if ma200_pct is not None else ""
+        return f"CAPE ~39 (avg 17 — expensive) | {m}" if m else "CAPE ~39 (avg 17 — expensive)"
 
     if "nasdaq" in n:
-        ma = ma_str()
-        r = rsi_str()
-        parts = [p for p in [r, ma] if p]
-        return " | ".join(parts) if parts else "—"
+        r = f"RSI {rsi:.0f}" if rsi is not None else ""
+        m = f"{ma200_pct:+.1f}% vs 200d MA" if ma200_pct is not None else ""
+        return " | ".join(p for p in [r, m] if p) or "—"
 
     if "vwce" in n:
-        ma = ma_str()
-        return f"{ma} — uptrend" if ma else "Global ETF"
+        m = f"{ma200_pct:+.1f}% vs 200d MA" if ma200_pct is not None else ""
+        return m or "Global all-world ETF"
 
+    # ── MACRO ──
     if "gold" in n and "silver" not in n:
-        ry = f"Real yield: {real_yield:+.1f}% ({'bullish' if real_yield is not None and real_yield < 0 else 'bearish'})" if real_yield is not None else ""
+        ry = (
+            f"Real yield: {real_yield:+.2f}% ({'bullish' if real_yield < 0 else 'headwind'})"
+            if real_yield is not None else ""
+        )
         gs = f"G/S ratio: {gs_ratio:.0f}" if gs_ratio is not None else ""
-        parts = [p for p in [ry, gs] if p]
-        return " | ".join(parts) if parts else "—"
+        return " | ".join(p for p in [ry, gs] if p) or "—"
 
     if "silver" in n:
         if gs_ratio is not None:
-            signal = "BUY signal (>80 = silver cheap)" if gs_ratio > 80 else "fair"
-            return f"G/S ratio: {gs_ratio:.0f} — {signal}"
+            tag = "BUY zone (>80 = cheap)" if gs_ratio > 80 else "fair"
+            return f"G/S ratio: {gs_ratio:.0f} — {tag}"
         return "—"
 
     if "wti" in n or "oil" in n:
         if price is not None:
-            if price < 60:
-                return f"In buy zone ($55-60)"
-            if price < 75:
-                return "Fair value — buy zone at $55-60"
-            return "Above buy zone"
+            zone = (
+                "in buy zone $55-60" if price < 60 else
+                "fair value — buy zone $55-60" if price < 75 else
+                "above buy zone"
+            )
+            return f"${price:.0f}/bbl — {zone}"
         return "—"
 
     if "vix" in n:
         if price is not None:
-            if price > 30:
-                label = "panic — buy signal"
-            elif price > 25:
-                label = "fear — elevated"
-            elif price > 18:
-                label = "elevated"
-            elif price < 15:
-                label = "complacent — watch for reversal"
-            else:
-                label = "normal"
-            return f"{price:.1f} — {label}"
+            label = (
+                "PANIC — buy signal" if price > 30 else
+                "fear — elevated" if price > 25 else
+                "elevated" if price > 18 else
+                "complacent — watch for reversal" if price < 15 else
+                "normal"
+            )
+            return f"VIX {price:.1f} — {label}"
         return "—"
 
     if "treasury" in n or "10y" in n:
-        ry = f"Real yield: {real_yield:+.1f}%" if real_yield is not None else ""
-        return ry if ry else "Yield watch"
+        return f"Real yield: {real_yield:+.2f}%" if real_yield is not None else "Yield watch"
 
-    if "eur" in n and "usd" in n:
+    if "eur" in n:
         return "Rate differential driven"
 
     if "dxy" in n or "dollar" in n:
         return "Strong $ = headwind for gold & EM"
 
-    if "nvidia" in n:
-        r = rsi_str()
-        ma = ma_str()
-        parts = [p for p in [r, ma] if p]
-        return " | ".join(parts) if parts else "—"
-
-    if "palantir" in n:
-        r = rsi_str()
-        return f"{r} | Gov vs commercial growth key" if r else "Gov vs commercial growth key"
-
-    if "vertiv" in n:
-        r = rsi_str()
-        return f"{r} | AI power infra backlog growing" if r else "AI power infra backlog growing"
-
-    if "microsoft" in n:
-        r = rsi_str()
-        return f"{r} | Azure AI revenue growth key" if r else "Azure AI revenue growth key"
-
-    if "meta" in n:
-        r = rsi_str()
-        return f"{r} | AI capex returns materialising" if r else "AI capex returns materialising"
-
-    if "micron" in n:
-        r = rsi_str()
-        return f"{r} | HBM market share key" if r else "HBM market share key"
-
-    if "constellation" in n:
-        return "Nuclear + AI datacenter contracts"
-
-    if "cameco" in n:
-        return "Uranium demand from new reactors"
-
-    if "nextera" in n:
-        return "IRA subsidy dependency — policy risk"
-
-    if "iberdrola" in n:
-        return "Grid expansion pipeline solid"
-
-    if "bitcoin" in n or "btc" in n and "dominance" not in n:
-        fg = f"Fear & Greed: {fear_greed['score']:.0f} ({fear_greed['rating']})" if fear_greed else ""
-        days = f"Day {days_since_halving} post-halving" if days_since_halving is not None else ""
-        parts = [p for p in [fg, days] if p]
-        return " | ".join(parts) if parts else "—"
+    # ── CRYPTO ──
+    if "bitcoin" in n or ("btc" in n and "dominance" not in n):
+        fg = (
+            f"Fear & Greed: {fear_greed['score']:.0f} ({fear_greed['rating']})"
+            if fear_greed else ""
+        )
+        dh = f"Day {days_since_halving} post-halving" if days_since_halving is not None else ""
+        return " | ".join(p for p in [fg, dh] if p) or "—"
 
     if "ethereum" in n or "eth" in n:
-        return "ETH/BTC ratio trend — neutral"
+        return "ETH/BTC ratio trend"
 
     if "dominance" in n:
         if btc_dominance is not None:
-            if btc_dominance < 45:
-                label = "altseason near (<45%)"
-            elif btc_dominance > 60:
-                label = "BTC dominant (>60% = altcoins depressed)"
-            else:
-                label = "neutral zone"
+            label = (
+                "altseason near (<45%)" if btc_dominance < 45 else
+                "BTC dominant (>60%)" if btc_dominance > 60 else
+                "neutral zone"
+            )
             return f"{btc_dominance:.1f}% — {label}"
         return "—"
 
-    # Generic fallback
-    r = rsi_str()
-    ma = ma_str()
-    parts = [p for p in [r, ma] if p]
-    return " | ".join(parts) if parts else "—"
+    # Fallback
+    r = f"RSI {rsi:.0f}" if rsi is not None else ""
+    m = f"{ma200_pct:+.1f}% vs 200d MA" if ma200_pct is not None else ""
+    return " | ".join(p for p in [r, m] if p) or "—"
 
 
 # ── FRED DATA ──────────────────────────────────────────────────────────────────
@@ -291,13 +268,11 @@ def _get_fred_data() -> dict:
     try:
         fred = Fred(api_key=os.getenv("FRED_API_KEY"))
         try:
-            series = fred.get_series("DFII10")
-            result["real_yield"] = round(float(series.dropna().iloc[-1]), 2)
+            result["real_yield"] = round(float(fred.get_series("DFII10").dropna().iloc[-1]), 2)
         except Exception:
             pass
         try:
-            series = fred.get_series("T10Y2Y")
-            result["yield_curve"] = round(float(series.dropna().iloc[-1]), 2)
+            result["yield_curve"] = round(float(fred.get_series("T10Y2Y").dropna().iloc[-1]), 2)
         except Exception:
             pass
     except Exception:
@@ -311,12 +286,10 @@ def _get_fear_greed() -> dict | None:
     try:
         url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
         resp = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
-        data = resp.json()
-        fg = data.get("fear_and_greed", {})
+        fg = resp.json().get("fear_and_greed", {})
         score = fg.get("score")
-        rating = fg.get("rating", "").title()
         if score is not None:
-            return {"score": round(float(score), 1), "rating": rating}
+            return {"score": round(float(score), 1), "rating": fg.get("rating", "").title()}
     except Exception:
         pass
     return None
@@ -328,72 +301,54 @@ def _get_crypto_rows(fear_greed: dict | None, days_since_halving: int) -> list:
     rows = []
     try:
         cg = CoinGeckoAPI()
-        data = cg.get_price(
+        prices = cg.get_price(
             ids="bitcoin,ethereum",
             vs_currencies="usd",
             include_24hr_change=True,
         )
         global_data = cg.get_global()
-        dominance = global_data.get("data", {}).get("market_cap_percentage", {}).get("btc", None)
+        dominance = global_data.get("data", {}).get("market_cap_percentage", {}).get("btc")
 
-        btc_price = data.get("bitcoin", {}).get("usd")
-        btc_chg = data.get("bitcoin", {}).get("usd_24h_change")
-        eth_price = data.get("ethereum", {}).get("usd")
-        eth_chg = data.get("ethereum", {}).get("usd_24h_change")
+        btc_price = prices.get("bitcoin", {}).get("usd")
+        btc_chg   = prices.get("bitcoin", {}).get("usd_24h_change")
+        eth_price = prices.get("ethereum", {}).get("usd")
+        eth_chg   = prices.get("ethereum", {}).get("usd_24h_change")
 
         btc_chg_r = round(float(btc_chg), 2) if btc_chg is not None else None
         eth_chg_r = round(float(eth_chg), 2) if eth_chg is not None else None
+        dom_r     = round(float(dominance), 1) if dominance is not None else None
 
-        btc_key = _key_indicator(
-            "bitcoin", btc_price, None, None, None, None,
-            fear_greed, days_since_halving, None
-        )
         rows.append({
             "name": "Bitcoin (BTC)",
             "price": f"${btc_price:,.0f}" if btc_price else "—",
             "change_pct": btc_chg_r,
-            "rsi": None,
-            "ma200_pct": None,
-            "pct_52w_high": None,
-            "key_indicator": btc_key,
+            "rsi": None, "ma200_pct": None, "pct_52w_high": None,
+            "key_indicator": _key_indicator(
+                "bitcoin", btc_price, None, None, None, None, None,
+                fear_greed, days_since_halving, None
+            ),
             "signal": _signal("bitcoin", btc_chg_r, None),
         })
-
-        eth_key = _key_indicator(
-            "ethereum", eth_price, None, None, None, None,
-            None, None, None
-        )
         rows.append({
             "name": "Ethereum (ETH)",
             "price": f"${eth_price:,.0f}" if eth_price else "—",
             "change_pct": eth_chg_r,
-            "rsi": None,
-            "ma200_pct": None,
-            "pct_52w_high": None,
-            "key_indicator": eth_key,
+            "rsi": None, "ma200_pct": None, "pct_52w_high": None,
+            "key_indicator": _key_indicator("ethereum", eth_price, None, None, None, None, None, None, None, None),
             "signal": _signal("ethereum", eth_chg_r, None),
         })
-
-        dom_r = round(float(dominance), 1) if dominance is not None else None
-        dom_key = _key_indicator(
-            "btc dominance", None, None, None, None, None,
-            None, None, dom_r
-        )
         rows.append({
             "name": "BTC Dominance",
             "price": f"{dom_r:.1f}%" if dom_r is not None else "—",
             "change_pct": None,
-            "rsi": None,
-            "ma200_pct": None,
-            "pct_52w_high": None,
-            "key_indicator": dom_key,
+            "rsi": None, "ma200_pct": None, "pct_52w_high": None,
+            "key_indicator": _key_indicator("btc dominance", None, None, None, None, None, None, None, None, dom_r),
             "signal": "neutral",
         })
     except Exception as e:
         rows.append({
-            "name": "Bitcoin (BTC)",
-            "price": "—", "change_pct": None, "rsi": None,
-            "ma200_pct": None, "pct_52w_high": None,
+            "name": "Bitcoin (BTC)", "price": "—", "change_pct": None,
+            "rsi": None, "ma200_pct": None, "pct_52w_high": None,
             "key_indicator": f"Fetch error: {e}", "signal": "neutral",
         })
     return rows
@@ -403,53 +358,67 @@ def _get_crypto_rows(fear_greed: dict | None, days_since_halving: int) -> list:
 
 def _fetch_sections(fred_data: dict, gs_ratio: float | None, fear_greed: dict | None,
                     days_since_halving: int) -> list:
+    # Pre-fetch SPY 1-month return for sector relative performance
+    spy_1m_return = None
+    try:
+        spy_hist = yf.Ticker("SPY").history(period="1y")
+        if not spy_hist.empty:
+            spy_1m_return = _calc_1m_return(spy_hist["Close"].dropna())
+    except Exception:
+        pass
+
     sections_data = []
 
     for section_label, tickers in SECTIONS.items():
         rows = []
+        is_sector_pulse = section_label == "SECTOR PULSE"
+
         for name, ticker in tickers.items():
             try:
-                t = yf.Ticker(ticker)
-                hist = t.history(period="1y")
+                hist = yf.Ticker(ticker).history(period="1y")
                 if hist.empty:
                     raise ValueError("No history returned")
 
                 closes = hist["Close"].dropna()
                 current_price = float(closes.iloc[-1])
-                prev_price = float(closes.iloc[-2]) if len(closes) > 1 else current_price
-                change_pct = round(((current_price - prev_price) / prev_price) * 100, 2)
+                prev_price    = float(closes.iloc[-2]) if len(closes) > 1 else current_price
+                change_pct    = round(((current_price - prev_price) / prev_price) * 100, 2)
 
-                rsi = _calc_rsi(closes)
-                ma200_pct = _calc_ma200_pct(closes, current_price)
+                rsi          = _calc_rsi(closes)
+                ma200_pct    = _calc_ma200_pct(closes, current_price)
                 pct_52w_high = _calc_52w_high_pct(closes, current_price)
 
+                # Sector vs SPY 1M
+                vs_spy_1m = None
+                if is_sector_pulse and spy_1m_return is not None:
+                    etf_1m = _calc_1m_return(closes)
+                    if etf_1m is not None:
+                        vs_spy_1m = round(etf_1m - spy_1m_return, 2)
+
                 key_ind = _key_indicator(
-                    name, current_price, rsi, ma200_pct,
-                    fred_data.get("real_yield"),
-                    gs_ratio, fear_greed, days_since_halving, None
+                    name, current_price, rsi, ma200_pct, pct_52w_high,
+                    fred_data.get("real_yield"), gs_ratio, fear_greed,
+                    days_since_halving, None,
+                    vs_spy_1m=vs_spy_1m,
+                    section=section_label,
                 )
                 sig = _signal(name, change_pct, rsi)
 
                 rows.append({
-                    "name": name,
-                    "price": _fmt_price(current_price, ticker),
-                    "change_pct": change_pct,
-                    "rsi": rsi,
-                    "ma200_pct": ma200_pct,
-                    "pct_52w_high": pct_52w_high,
+                    "name":          name,
+                    "price":         _fmt_price(current_price, ticker),
+                    "change_pct":    change_pct,
+                    "rsi":           rsi,
+                    "ma200_pct":     ma200_pct,
+                    "pct_52w_high":  pct_52w_high,
                     "key_indicator": key_ind,
-                    "signal": sig,
+                    "signal":        sig,
                 })
             except Exception as e:
                 rows.append({
-                    "name": name,
-                    "price": "—",
-                    "change_pct": None,
-                    "rsi": None,
-                    "ma200_pct": None,
-                    "pct_52w_high": None,
-                    "key_indicator": f"Error: {e}",
-                    "signal": "neutral",
+                    "name": name, "price": "—", "change_pct": None,
+                    "rsi": None, "ma200_pct": None, "pct_52w_high": None,
+                    "key_indicator": f"Error: {e}", "signal": "neutral",
                 })
 
         sections_data.append({"label": section_label, "rows": rows})
@@ -464,29 +433,23 @@ def _sections_to_prompt_text(sections_data: list, extras: dict) -> str:
     for sec in sections_data:
         lines.append(f"\n--- {sec['label']} ---")
         for r in sec["rows"]:
-            chg = f"({r['change_pct']:+.2f}%)" if r["change_pct"] is not None else ""
+            chg  = f"({r['change_pct']:+.2f}%)" if r["change_pct"] is not None else ""
             rsi_s = f"RSI:{r['rsi']:.0f}" if r["rsi"] is not None else ""
-            ma_s = (f"vs200MA:{r['ma200_pct']:+.1f}%" if r["ma200_pct"] is not None else "")
+            ma_s  = f"vs200MA:{r['ma200_pct']:+.1f}%" if r["ma200_pct"] is not None else ""
             parts = [p for p in [r["price"], chg, rsi_s, ma_s, r["key_indicator"]] if p]
             lines.append(f"  {r['name']}: {' | '.join(parts)}")
 
     lines.append("\n--- DERIVED METRICS ---")
-    gs = extras.get("gs_ratio")
-    ry = extras.get("real_yield")
-    yc = extras.get("yield_curve")
-    fg = extras.get("fear_greed")
+    gs  = extras.get("gs_ratio")
+    ry  = extras.get("real_yield")
+    yc  = extras.get("yield_curve")
+    fg  = extras.get("fear_greed")
     dsh = extras.get("days_since_halving")
-
-    if gs:
-        lines.append(f"  Gold/Silver Ratio: {gs:.1f}")
-    if ry is not None:
-        lines.append(f"  Real Yield (10Y TIPS): {ry:+.2f}%")
-    if yc is not None:
-        lines.append(f"  Yield Curve (10Y-2Y): {yc:+.2f}%")
-    if fg:
-        lines.append(f"  CNN Fear & Greed: {fg['score']:.0f} ({fg['rating']})")
-    if dsh is not None:
-        lines.append(f"  Days Since BTC Halving: {dsh}")
+    if gs:  lines.append(f"  Gold/Silver Ratio: {gs:.1f}")
+    if ry is not None: lines.append(f"  Real Yield (10Y TIPS): {ry:+.2f}%")
+    if yc is not None: lines.append(f"  Yield Curve (10Y-2Y): {yc:+.2f}%")
+    if fg:  lines.append(f"  CNN Fear & Greed: {fg['score']:.0f} ({fg['rating']})")
+    if dsh is not None: lines.append(f"  Days Since BTC Halving: {dsh}")
 
     return "\n".join(lines)
 
@@ -508,28 +471,28 @@ Write a SECTOR ALERTS section only (the macro snapshot is rendered separately fr
 
 SECTOR ALERTS
 Search for today's material news across these sectors Pedro tracks:
-- Equities & Indices (S&P 500, Nasdaq, Magnificent 7)
-- Tech / AI stocks (Nvidia, Microsoft, Meta, Alphabet, Palantir, Vertiv, Micron)
-- Gold & Silver (price drivers, central bank buying)
-- Aerospace & Defense (NATO spending, earnings, contracts)
-- Clean Energy & Nuclear (Cameco, Constellation Energy, uranium, IRA)
-- Copper & Lithium (LME price, EV demand, BATT, 4COP)
-- Oil & Gas (WTI, OPEC decisions, LNG exports)
-- Crypto (BTC/ETH price action, regulation, dominance)
+- Equities & Indices (S&P 500, Nasdaq, Magnificent 7: Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta, Tesla)
+- Gold & Silver (price drivers, central bank buying, real yield moves)
+- Aerospace & Defense (ITA ETF — NATO spending, contracts, earnings)
+- FinTech & Digital Payments (FINX ETF — earnings, regulation, M&A)
+- Quantum Computing (QTUM ETF — breakthroughs, funding, partnerships)
+- Clean Energy & Nuclear (uranium supply, IRA policy, datacenter power)
+- Oil & Gas (WTI level, OPEC decisions, LNG exports)
+- Crypto (BTC/ETH price action, on-chain data, regulation, dominance)
 
 Only include sectors where something MATERIALLY relevant happened today.
 For each sector alert:
-• **[Sector — Company/Asset]:** [What happened — 1 sentence]. [Why it matters for Pedro's portfolio — 1 sentence]. [Source]
+• **[Sector — Company/Asset]:** [What happened — 1 sentence]. [Why it matters — 1 sentence]. [Source]
 
 After all sector alerts, write:
 Why it matters: [One sentence — the single most actionable signal from today's markets]
 </output_structure>
 
 <quality_rules>
-- Use the exact live numbers provided above for any references — do not estimate or round
-- Sector alerts: only include if there is a genuine material development (earnings beat/miss, major contract, significant price move >3%, regulatory action)
+- Use the exact live numbers provided above — do not estimate or round
+- Only include a sector if there is a genuine material development (earnings beat/miss, major contract, significant price move >3%, regulatory action)
 - Do not invent news — if a sector is quiet today, omit it
-- Be specific about numbers: price levels, percentage moves, contract values
+- Be specific: price levels, percentage moves, contract values
 </quality_rules>"""
 
 
@@ -538,36 +501,28 @@ Why it matters: [One sentence — the single most actionable signal from today's
 def fetch() -> dict:
     llm = get_llm()
 
-    # 1. FRED
-    fred_data = _get_fred_data()
-
-    # 2. Fear & Greed
-    fear_greed = _get_fear_greed()
-
-    # 3. Days since halving
+    fred_data        = _get_fred_data()
+    fear_greed       = _get_fear_greed()
     days_since_halving = (date.today() - BTC_HALVING_4TH).days
 
-    # 4. Gold & Silver prices for G/S ratio (fetch early)
+    # Gold/Silver ratio (pre-fetch for key indicators)
     gs_ratio = None
     try:
-        gold_hist = yf.Ticker("GC=F").history(period="2d")
+        gold_hist   = yf.Ticker("GC=F").history(period="2d")
         silver_hist = yf.Ticker("SI=F").history(period="2d")
         if not gold_hist.empty and not silver_hist.empty:
-            gold_price = float(gold_hist["Close"].iloc[-1])
+            gold_price   = float(gold_hist["Close"].iloc[-1])
             silver_price = float(silver_hist["Close"].iloc[-1])
             if silver_price > 0:
                 gs_ratio = round(gold_price / silver_price, 1)
     except Exception:
         pass
 
-    # 5. Fetch all yfinance sections
     sections_data = _fetch_sections(fred_data, gs_ratio, fear_greed, days_since_halving)
 
-    # 6. Crypto rows
     crypto_rows = _get_crypto_rows(fear_greed, days_since_halving)
     sections_data.append({"label": "CRYPTO", "rows": crypto_rows})
 
-    # 7. Extras dict
     btc_dominance = None
     for row in crypto_rows:
         if "dominance" in row["name"].lower():
@@ -577,15 +532,14 @@ def fetch() -> dict:
                 pass
 
     extras = {
-        "gs_ratio": gs_ratio,
-        "real_yield": fred_data.get("real_yield"),
-        "yield_curve": fred_data.get("yield_curve"),
-        "fear_greed": fear_greed,
+        "gs_ratio":          gs_ratio,
+        "real_yield":        fred_data.get("real_yield"),
+        "yield_curve":       fred_data.get("yield_curve"),
+        "fear_greed":        fear_greed,
         "days_since_halving": days_since_halving,
-        "btc_dominance": btc_dominance,
+        "btc_dominance":     btc_dominance,
     }
 
-    # 8. LLM prompt
     macro_text = _sections_to_prompt_text(sections_data, extras)
     prompt = PROMPT.format(
         date=datetime.now().strftime("%A, %B %d, %Y"),
@@ -594,12 +548,12 @@ def fetch() -> dict:
     content, sources = llm.generate_with_search(prompt)
 
     return {
-        "id": "investment_markets",
-        "title": "📈 Markets & Economy",
+        "id":      "investment_markets",
+        "title":   "Markets & Economy",
         "content": content,
         "macro": {
             "sections": sections_data,
-            "extras": extras,
+            "extras":   extras,
         },
         "sources": sources,
     }

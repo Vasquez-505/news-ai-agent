@@ -9,13 +9,13 @@ SAMPLE_TOPICS = {
         "title": "📈 Markets & Economy",
         "content": """SECTOR ALERTS
 
-• **Nvidia (AI/Semiconductors):** Nvidia reported Q1 datacenter revenue of $22.6B, up 427% year-on-year, beating consensus estimates by 18%. The company raised full-year guidance citing sustained hyperscaler demand for H100 and Blackwell chips. This reinforces the AI infrastructure capex cycle thesis — Vertiv and Micron are direct beneficiaries.
+• **Magnificent 7 — Nvidia:** Nvidia reported Q1 datacenter revenue of $22.6B, up 427% year-on-year, beating consensus estimates by 18%. The company raised full-year guidance citing sustained hyperscaler demand for Blackwell chips — XLK (Tech/AI sector ETF) is up +2.3% vs SPY over the past month on this tailwind. [Reuters]
 
 • **Gold & Silver:** Gold touched a fresh all-time high of $3,480/oz amid dollar weakness and central bank accumulation, with the People's Bank of China adding 8 tonnes for the 18th consecutive month. Silver followed, hitting $41.20/oz, bringing the Gold/Silver ratio to 84:1 — above the 80 threshold that historically signals silver undervaluation. [Reuters]
 
 • **Oil & Gas (OPEC+):** OPEC+ agreed to extend production cuts of 2.2 million barrels/day through September, defying earlier speculation of a rollback. WTI held above $72 on the news. Cheniere Energy and Shell are direct beneficiaries of sustained LNG demand from Europe. [Financial Times]
 
-• **Aerospace & Defense:** NATO member states confirmed aggregate defense spending reached 2.3% of collective GDP in 2025, the first time the alliance has exceeded the 2% threshold on average. Lockheed Martin, RTX, and the iShares DFND ETF reacted positively. [AP]
+• **Aerospace & Defense (ITA):** NATO member states confirmed aggregate defense spending reached 2.3% of collective GDP in 2025, the first time the alliance has exceeded the 2% threshold. ITA (Aerospace & Defense ETF) is the strongest performing sector this month at +3.4% vs SPY. [AP]
 
 Why it matters: The Nvidia print confirms that AI capex is accelerating, not plateauing — the infrastructure build-out has years to run.""",
         "macro": {
@@ -41,23 +41,26 @@ Why it matters: The Nvidia print confirms that AI capex is accelerating, not pla
                     ]
                 },
                 {
-                    "label": "TECH / AI",
+                    "label": "MAGNIFICENT 7",
                     "rows": [
-                        {"name": "Nvidia", "price": "1,024.30", "change_pct": 3.21, "rsi": 72.1, "ma200_pct": 42.3, "pct_52w_high": -8.2, "key_indicator": "RSI: 72 — overbought | vs 200d MA: +42.3%", "signal": "caution"},
-                        {"name": "Palantir", "price": "87.40", "change_pct": 1.12, "rsi": 64.3, "ma200_pct": 28.7, "pct_52w_high": -14.6, "key_indicator": "RSI: 64 — neutral | Gov vs commercial growth key", "signal": "green"},
-                        {"name": "Vertiv", "price": "112.80", "change_pct": 2.41, "rsi": 67.8, "ma200_pct": 18.4, "pct_52w_high": -21.3, "key_indicator": "RSI: 68 — neutral | AI power infra backlog growing", "signal": "green"},
-                        {"name": "Microsoft", "price": "418.20", "change_pct": 0.62, "rsi": 58.2, "ma200_pct": 9.8, "pct_52w_high": -5.4, "key_indicator": "RSI: 58 — neutral | Azure AI revenue growth key", "signal": "green"},
-                        {"name": "Meta", "price": "564.10", "change_pct": 0.91, "rsi": 61.4, "ma200_pct": 14.2, "pct_52w_high": -12.1, "key_indicator": "RSI: 61 — neutral | AI capex returns materialising", "signal": "green"},
-                        {"name": "Micron", "price": "98.40", "change_pct": 1.84, "rsi": 55.3, "ma200_pct": -4.2, "pct_52w_high": -38.7, "key_indicator": "RSI: 55 — neutral | HBM market share key", "signal": "neutral"},
+                        {"name": "Apple",     "price": "210.40", "change_pct":  0.82, "rsi": 56.1, "ma200_pct":  8.2, "pct_52w_high":  -4.1, "key_indicator": "-4.1% below 52W high",      "signal": "green"},
+                        {"name": "Microsoft", "price": "430.20", "change_pct":  0.62, "rsi": 58.2, "ma200_pct":  9.8, "pct_52w_high":  -5.4, "key_indicator": "-5.4% below 52W high",      "signal": "green"},
+                        {"name": "Alphabet",  "price": "175.80", "change_pct":  1.10, "rsi": 60.3, "ma200_pct": 12.3, "pct_52w_high":  -3.2, "key_indicator": "-3.2% below 52W high",      "signal": "green"},
+                        {"name": "Amazon",    "price": "195.60", "change_pct":  0.91, "rsi": 62.4, "ma200_pct": 14.1, "pct_52w_high":  -6.7, "key_indicator": "-6.7% below 52W high",      "signal": "green"},
+                        {"name": "Nvidia",    "price": "880.30", "change_pct":  3.21, "rsi": 72.1, "ma200_pct": 42.3, "pct_52w_high":  -8.2, "key_indicator": "-8.2% below 52W high",      "signal": "caution"},
+                        {"name": "Meta",      "price": "564.10", "change_pct":  0.91, "rsi": 61.4, "ma200_pct": 14.2, "pct_52w_high": -12.1, "key_indicator": "-12.1% below 52W high",     "signal": "green"},
+                        {"name": "Tesla",     "price": "280.50", "change_pct": -1.20, "rsi": 45.2, "ma200_pct": -3.4, "pct_52w_high": -31.2, "key_indicator": "-31.2% below 52W high",     "signal": "caution"},
                     ]
                 },
                 {
-                    "label": "ENERGY",
+                    "label": "SECTOR PULSE",
                     "rows": [
-                        {"name": "Constellation Energy", "price": "298.40", "change_pct": 1.82, "rsi": 63.1, "ma200_pct": 24.7, "pct_52w_high": -11.2, "key_indicator": "Nuclear + AI datacenter contracts", "signal": "green"},
-                        {"name": "Cameco", "price": "52.30", "change_pct": 0.71, "rsi": 54.8, "ma200_pct": 8.3, "pct_52w_high": -28.4, "key_indicator": "Uranium demand from new reactors", "signal": "green"},
-                        {"name": "NextEra Energy", "price": "74.20", "change_pct": -0.31, "rsi": 48.2, "ma200_pct": -3.1, "pct_52w_high": -22.6, "key_indicator": "IRA subsidy dependency — policy risk", "signal": "neutral"},
-                        {"name": "Iberdrola", "price": "15.20", "change_pct": 0.40, "rsi": 56.7, "ma200_pct": 12.4, "pct_52w_high": -4.3, "key_indicator": "Grid expansion pipeline solid", "signal": "green"},
+                        {"name": "Tech / AI",           "price": "205.40", "change_pct":  1.20, "rsi": 62.1, "ma200_pct": 10.4, "pct_52w_high":  -3.8, "key_indicator": "+2.3% vs SPY (1M) — outperforming market",  "signal": "green"},
+                        {"name": "Energy",               "price":  "88.20", "change_pct": -0.40, "rsi": 47.8, "ma200_pct": -2.1, "pct_52w_high": -12.4, "key_indicator": "-3.1% vs SPY (1M) — underperforming market", "signal": "caution"},
+                        {"name": "Oil & Gas",            "price": "112.30", "change_pct": -0.80, "rsi": 44.2, "ma200_pct": -4.2, "pct_52w_high": -18.7, "key_indicator": "-4.8% vs SPY (1M) — underperforming market", "signal": "caution"},
+                        {"name": "Aerospace & Defense",  "price": "148.60", "change_pct":  1.80, "rsi": 65.3, "ma200_pct": 12.7, "pct_52w_high":  -2.1, "key_indicator": "+3.4% vs SPY (1M) — outperforming market",  "signal": "green"},
+                        {"name": "FinTech",              "price":  "45.20", "change_pct":  0.60, "rsi": 54.1, "ma200_pct":  3.2, "pct_52w_high":  -8.3, "key_indicator": "+0.3% vs SPY (1M) — in line with market",   "signal": "neutral"},
+                        {"name": "Quantum Computing",    "price":  "38.40", "change_pct":  2.10, "rsi": 67.4, "ma200_pct": 18.4, "pct_52w_high":  -9.6, "key_indicator": "+5.2% vs SPY (1M) — outperforming market",  "signal": "green"},
                     ]
                 },
                 {
