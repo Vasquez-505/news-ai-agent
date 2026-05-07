@@ -258,7 +258,7 @@ def render(topics: dict, output_dir: str = "output", watchlist: list = None) -> 
     generated_at = now.strftime("%H:%M · %B %d, %Y")
 
     markets  = topics.get("investment_markets", {})
-    world    = topics.get("world_news", {})
+    world    = topics.get("general_world_news", {})
     ai       = topics.get("ai_productivity", {})
     portugal = topics.get("portugal_policy", {})
     eu       = topics.get("eu_policy", {})
