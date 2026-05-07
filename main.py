@@ -32,14 +32,39 @@ def _load_config() -> dict:
         return yaml.safe_load(f)
 
 
-async def _scheduled_fetch(watchlist: list = None):
+async def _scheduled_fetch(bot, chat_id: int, dashboard_url: str, watchlist: list = None):
     """Called by APScheduler at the configured fetch time."""
     logger.info("Scheduled fetch triggered at %s", datetime.now().strftime("%H:%M"))
     try:
-        html_path = await run_pipeline(output_dir="output", watchlist=watchlist or [])
-        logger.info("Scheduled fetch complete. Dashboard: %s", html_path)
+        await run_pipeline(output_dir="output", watchlist=watchlist or [])
+        logger.info("Scheduled fetch complete")
     except Exception as e:
         logger.error("Scheduled fetch failed: %s", e)
+
+    # Push morning newspaper link to Telegram regardless of pipeline errors
+    date_str = datetime.now().strftime("%A, %B %d, %Y")
+    if dashboard_url:
+        text = (
+            f"📰 Good morning — your briefing for {date_str} is ready.\n\n"
+            f"{dashboard_url}\n\n"
+            f"Tap 📰 Start Briefing for the voice summary, or ask me anything."
+        )
+    else:
+        text = (
+            f"📰 Good morning — your briefing for {date_str} is ready.\n\n"
+            f"Tap 📰 Start Briefing for the voice summary, or ask me anything."
+        )
+    try:
+        from telegram import ReplyKeyboardMarkup
+        keyboard = ReplyKeyboardMarkup(
+            [["📰 Start Briefing"], ["📊 Status", "🔄 Reload"]],
+            resize_keyboard=True,
+            is_persistent=True,
+        )
+        await bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard)
+        logger.info("Morning push sent to chat %d", chat_id)
+    except Exception as e:
+        logger.error("Failed to send morning push: %s", e)
 
 
 async def main():
@@ -52,20 +77,24 @@ async def main():
     logger.info("Fetch scheduled for %s %s", fetch_time, timezone)
 
     watchlist = config.get("watchlist", [])
+    dashboard_url = os.getenv("DASHBOARD_URL", "")
+    chat_id = int(os.getenv("TELEGRAM_CHAT_ID", "0"))
+
+    # --- Telegram bot (non-blocking) ---
+    app = build_application()
 
     # --- Scheduler ---
     scheduler = AsyncIOScheduler(timezone=timezone)
     scheduler.add_job(
-        lambda: asyncio.create_task(run_pipeline(output_dir="output", watchlist=watchlist)),
+        lambda: asyncio.create_task(
+            _scheduled_fetch(app.bot, chat_id, dashboard_url, watchlist)
+        ),
         CronTrigger(hour=hour, minute=minute, timezone=timezone),
         id="morning_fetch",
         replace_existing=True,
     )
     scheduler.start()
     logger.info("Scheduler started")
-
-    # --- Telegram bot (non-blocking) ---
-    app = build_application()
     await app.initialize()
     await app.start()
     await app.updater.start_polling(allowed_updates=["message"])
