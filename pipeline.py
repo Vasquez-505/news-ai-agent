@@ -17,15 +17,16 @@ from utils.greetings import get_greeting
 
 logger = logging.getLogger(__name__)
 
-TOPIC_MODULES = [
+# Run these 6 topics in parallel — no inter-dependencies
+PARALLEL_TOPIC_MODULES = [
     ("world_news",        "topics.world_news"),
     ("ai_productivity",   "topics.ai_productivity"),
     ("portugal_policy",   "topics.portugal_policy"),
     ("eu_policy",         "topics.eu_policy"),
     ("us_policy",         "topics.us_policy"),
     ("investment_markets","topics.markets_economy"),
-    ("ai_tools_snapshot", "topics.ai_tools_snapshot"),
 ]
+# ai_tools_snapshot runs after ai_productivity so it can use today's AI news as context
 
 VOICE_SCRIPT_PROMPT = """You are Pedro's morning briefing voice assistant.
 Today is {date}.
@@ -87,11 +88,11 @@ async def run_pipeline(output_dir: str = "output", watchlist: list = None) -> st
     topics = {}
     errors = []
 
-    # Fetch all topics concurrently using threads (topic fetchers are sync)
-    with ThreadPoolExecutor(max_workers=7) as executor:
+    # Phase 1: fetch 6 topics in parallel
+    with ThreadPoolExecutor(max_workers=6) as executor:
         futures = {
             executor.submit(_fetch_topic, module): (topic_id, module)
-            for topic_id, module in TOPIC_MODULES
+            for topic_id, module in PARALLEL_TOPIC_MODULES
         }
         for future in as_completed(futures):
             topic_id, module = futures[future]
@@ -108,6 +109,24 @@ async def run_pipeline(output_dir: str = "output", watchlist: list = None) -> st
                     "content": f"[Data unavailable: {e}]",
                     "sources": [],
                 }
+
+    # Phase 2: fetch AI Tools Snapshot with today's AI news as context
+    try:
+        import importlib
+        ai_tools_mod = importlib.import_module("topics.ai_tools_snapshot")
+        ai_news_context = topics.get("ai_productivity", {}).get("content", "")
+        data = ai_tools_mod.fetch(ai_productivity_content=ai_news_context)
+        topics[data.get("id", "ai_tools_snapshot")] = data
+        logger.info("Fetched: ai_tools_snapshot")
+    except Exception as e:
+        logger.error("Failed to fetch ai_tools_snapshot: %s", e)
+        errors.append("ai_tools_snapshot")
+        topics["ai_tools_snapshot"] = {
+            "id": "ai_tools_snapshot",
+            "title": "AI Tools Snapshot",
+            "content": f"[Data unavailable: {e}]",
+            "sources": [],
+        }
 
     state.set_topics(topics)
     status_msg = f"Fetched {len(topics)} topics."
