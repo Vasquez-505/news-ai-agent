@@ -37,12 +37,12 @@ SECTIONS = {
         "Tesla":     "TSLA",
     },
     "SECTOR PULSE": {
-        "Tech / AI":           "XLK",
-        "Energy":              "XLE",
-        "Oil & Gas":           "XOP",
-        "Aerospace & Defense": "ITA",
-        "FinTech":             "FINX",
-        "Quantum Computing":   "QTUM",
+        "Tech / AI (XLK)":           "XLK",
+        "Energy (XLE)":              "XLE",
+        "Oil & Gas (XOP)":           "XOP",
+        "Aerospace & Defense (ITA)": "ITA",
+        "FinTech (FINX)":            "FINX",
+        "Quantum Computing (QTUM)":  "QTUM",
     },
 }
 

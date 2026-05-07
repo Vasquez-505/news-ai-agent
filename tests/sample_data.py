@@ -55,12 +55,12 @@ Why it matters: The Nvidia print confirms that AI capex is accelerating, not pla
                 {
                     "label": "SECTOR PULSE",
                     "rows": [
-                        {"name": "Tech / AI",           "price": "205.40", "change_pct":  1.20, "rsi": 62.1, "ma200_pct": 10.4, "pct_52w_high":  -3.8, "key_indicator": "+2.3% vs SPY (1M) — outperforming market",  "signal": "green"},
-                        {"name": "Energy",               "price":  "88.20", "change_pct": -0.40, "rsi": 47.8, "ma200_pct": -2.1, "pct_52w_high": -12.4, "key_indicator": "-3.1% vs SPY (1M) — underperforming market", "signal": "caution"},
-                        {"name": "Oil & Gas",            "price": "112.30", "change_pct": -0.80, "rsi": 44.2, "ma200_pct": -4.2, "pct_52w_high": -18.7, "key_indicator": "-4.8% vs SPY (1M) — underperforming market", "signal": "caution"},
-                        {"name": "Aerospace & Defense",  "price": "148.60", "change_pct":  1.80, "rsi": 65.3, "ma200_pct": 12.7, "pct_52w_high":  -2.1, "key_indicator": "+3.4% vs SPY (1M) — outperforming market",  "signal": "green"},
-                        {"name": "FinTech",              "price":  "45.20", "change_pct":  0.60, "rsi": 54.1, "ma200_pct":  3.2, "pct_52w_high":  -8.3, "key_indicator": "+0.3% vs SPY (1M) — in line with market",   "signal": "neutral"},
-                        {"name": "Quantum Computing",    "price":  "38.40", "change_pct":  2.10, "rsi": 67.4, "ma200_pct": 18.4, "pct_52w_high":  -9.6, "key_indicator": "+5.2% vs SPY (1M) — outperforming market",  "signal": "green"},
+                        {"name": "Tech / AI (XLK)",           "price": "205.40", "change_pct":  1.20, "rsi": 62.1, "ma200_pct": 10.4, "pct_52w_high":  -3.8, "key_indicator": "+2.3% vs SPY (1M) — outperforming market",  "signal": "green"},
+                        {"name": "Energy (XLE)",               "price":  "88.20", "change_pct": -0.40, "rsi": 47.8, "ma200_pct": -2.1, "pct_52w_high": -12.4, "key_indicator": "-3.1% vs SPY (1M) — underperforming market", "signal": "caution"},
+                        {"name": "Oil & Gas (XOP)",            "price": "112.30", "change_pct": -0.80, "rsi": 44.2, "ma200_pct": -4.2, "pct_52w_high": -18.7, "key_indicator": "-4.8% vs SPY (1M) — underperforming market", "signal": "caution"},
+                        {"name": "Aerospace & Defense (ITA)",  "price": "148.60", "change_pct":  1.80, "rsi": 65.3, "ma200_pct": 12.7, "pct_52w_high":  -2.1, "key_indicator": "+3.4% vs SPY (1M) — outperforming market",  "signal": "green"},
+                        {"name": "FinTech (FINX)",             "price":  "45.20", "change_pct":  0.60, "rsi": 54.1, "ma200_pct":  3.2, "pct_52w_high":  -8.3, "key_indicator": "+0.3% vs SPY (1M) — in line with market",   "signal": "neutral"},
+                        {"name": "Quantum Computing (QTUM)",   "price":  "38.40", "change_pct":  2.10, "rsi": 67.4, "ma200_pct": 18.4, "pct_52w_high":  -9.6, "key_indicator": "+5.2% vs SPY (1M) — outperforming market",  "signal": "green"},
                     ]
                 },
                 {
