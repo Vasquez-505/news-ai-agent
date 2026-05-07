@@ -36,7 +36,7 @@ Today is {date}. Do two things:
 <output_format>
 First, write the table header exactly as shown:
 AI TOOLS SNAPSHOT
-Categoria | Pedro usa | Melhor atual | Alternativa | Custo/Plano | Esforco migracao | Switch? | Motivo
+Category | Pedro uses | Best today | Alternative | Cost/Plan | Migration effort | Switch? | Reason
 
 Then write one pipe-separated row per category. Use these exact Switch? values:
 - Optimal -> Pedro is already on the best tool

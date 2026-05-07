@@ -354,7 +354,7 @@ def _parse_tools_table(content: str) -> tuple:
 
         # Detect and skip the header row
         if not header_seen:
-            if cells[0].lower() in ("categoria", "category"):
+            if cells[0].lower() in ("categoria", "category", "category"):
                 header_seen = True
                 continue
             header_seen = True  # first row is data even without explicit header

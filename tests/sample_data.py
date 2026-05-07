@@ -195,7 +195,7 @@ Why it matters: The AI infrastructure executive order is the most portfolio-rele
         "id": "ai_tools_snapshot",
         "title": "🛠️ AI Tools Snapshot",
         "content": """AI TOOLS SNAPSHOT
-Categoria | Pedro usa | Melhor atual | Alternativa | Custo/Plano | Esforço migração | Switch? | Motivo
+Category | Pedro uses | Best today | Alternative | Cost/Plan | Migration effort | Switch? | Reason
 Código / Agentes | Claude Code | Claude Code | Cursor Agent | Incluído no Claude Pro | Nenhum | Optimal | Claude 4 Sonnet agora líder em SWE-bench; Claude Code é a escolha certa
 Excel / Spreadsheets | Manual + ChatGPT | Claude.ai (artifacts) | Gemini Advanced | Incluído no Claude Pro | Baixo | Consider | Claude gera e edita spreadsheets diretamente em artifacts sem sair do chat
 Presentations | Manual + ChatGPT | Gamma.app | Beautiful.ai | Free tier disponível | Médio | Consider | Gamma.app gera apresentações completas com design profissional em 60 segundos
@@ -207,7 +207,7 @@ Research / Web Search | Perplexity | Perplexity Pro | Claude + Search | $20/mês
 Transcription / Audio | Whisper / Otter | Whisper v3 (local) | AssemblyAI | Free (local) | Baixo | Optimal | Whisper v3 local continua melhor custo-benefício para uso pessoal
 Task Automation | Make / Zapier | Make | n8n (self-hosted) | Free tier Make | Nenhum | Optimal | Make free tier suficiente para maioria dos casos; n8n para controlo total
 
-Takeaway: Migrar Documents/Word para Claude.ai é a mudança mais impactante disponível hoje — melhoria imediata de qualidade sem custo adicional dado o Claude Pro existente.""",
+Takeaway: Switching Documents/Word to Claude.ai is the most impactful change available today — immediate quality improvement at no extra cost given existing Claude Pro subscription.""",
         "sources": [],
     },
 }
