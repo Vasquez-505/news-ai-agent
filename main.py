@@ -53,7 +53,7 @@ async def _scheduled_fetch(bot, chat_id: int, dashboard_url: str, watchlist: lis
     try:
         from telegram import InlineKeyboardMarkup, InlineKeyboardButton
         inline_kb = InlineKeyboardMarkup([[
-            InlineKeyboardButton("🤖 Talk to TARS", callback_data="talk_to_tars"),
+            InlineKeyboardButton("🤖 Talk to GMS", callback_data="talk_to_tars"),
             InlineKeyboardButton("📰 Start Briefing", callback_data="start_briefing"),
         ]])
         await bot.send_message(chat_id=chat_id, text=text, reply_markup=inline_kb)

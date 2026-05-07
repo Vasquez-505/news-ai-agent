@@ -7,7 +7,7 @@
 ### What it is
 A one-click workflow that opens a real voice conversation with a top-tier LLM (Claude.ai, Gemini, or ChatGPT), pre-loaded with today's full briefing context and Pedro's persona instructions. No pasting, no setup — click once, start talking.
 
-This is the "Jarvis/TARS" experience: a proper back-and-forth voice conversation about the morning briefing, using the native voice mode of the chosen LLM app.
+This is the "Jarvis/GMS" experience: a proper back-and-forth voice conversation about the morning briefing, using the native voice mode of the chosen LLM app.
 
 ### Trigger
 A desktop shortcut (`GMS_newt.bat` or `gms_newt.py`) on Pedro's PC. One double-click in the morning.
@@ -15,7 +15,7 @@ A desktop shortcut (`GMS_newt.bat` or `gms_newt.py`) on Pedro's PC. One double-c
 ### What happens when triggered
 1. Script reads `briefing_today.md` — generated automatically by the pipeline at 5am
 2. Script reads `context/pedro_profile.md` — Pedro's permanent profile (investments, preferences, background)
-3. Script reads `context/tars_prompt.md` — TARS persona instructions and behaviour rules
+3. Script reads `context/tars_prompt.md` — GMS persona instructions and behaviour rules
 4. Playwright opens the chosen LLM app in the browser
 5. Navigates to a new conversation (or designated project folder inside the app)
 6. Pastes all three files as context
@@ -32,11 +32,11 @@ Permanent file. Contains:
 - Topics he follows
 - Languages (Portuguese / English)
 - Risk appetite and investment style
-- Any preferences TARS should know
+- Any preferences GMS should know
 
 #### `context/tars_prompt.md`
 Permanent file. Contains:
-- TARS persona and tone (Interstellar reference — dry, precise, 75% humor)
+- GMS persona and tone (Interstellar reference — dry, precise, 75% humor)
 - Role: morning intelligence system
 - How to handle the briefing (weight topics by importance, be specific)
 - Conversation rules (no filler, no invented facts, tight unless asked for depth)
@@ -67,10 +67,10 @@ TBD — Claude.ai, Gemini, or ChatGPT. Pedro to confirm which voice mode he pref
 
 ---
 
-## 2. TARS — Telegram Text Conversation (Implemented)
+## 2. GMS — Telegram Text Conversation (Implemented)
 
 Already live. Morning push includes inline buttons:
-- **🤖 Talk to TARS** — TARS sends an informative briefing summary and holds a free text conversation inside Telegram. Useful for quick questions on the go.
+- **🤖 Talk to GMS** — GMS sends an informative briefing summary and holds a free text conversation inside Telegram. Useful for quick questions on the go.
 - **📰 Start Briefing** — sends the 90-second voice note summary
 
 This is the mobile-friendly fallback. GMS_newt is the full desktop voice experience.

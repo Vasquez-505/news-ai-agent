@@ -1,6 +1,6 @@
 # Good Morning Sunshine — Daily Intelligence Briefing Agent
 
-> *"The news never sleeps. Neither does TARS."*
+> *"The world generates a lot of noise. This is the signal."*
 
 A fully automated personal intelligence system that fetches, analyses, and delivers a daily morning briefing across 7 curated topics — deployed on a zero-cost stack, delivered via Telegram, and readable as a newspaper-style HTML dashboard.
 
@@ -15,7 +15,7 @@ Every morning at 5:00 AM, before you wake up, the system:
 3. **Pushes a Telegram notification** with the dashboard link and two action buttons
 4. **Generates a voice briefing** (~90 seconds) ready to play on demand
 
-When you tap **Talk to TARS**, your personal AI briefing agent — modelled on TARS from *Interstellar* — greets you with an intelligently weighted summary of the day and holds a free conversation about anything in the briefing.
+When you tap **Talk to GMS**, your personal AI briefing agent — modelled on GMS from *Interstellar* — greets you with an intelligently weighted summary of the day and holds a free conversation about anything in the briefing.
 
 ---
 
@@ -30,11 +30,11 @@ When you tap **Talk to TARS**, your personal AI briefing agent — modelled on T
 You wake up ─── Telegram push waiting:
                  "📰 Your briefing for Thursday, May 08 is ready."
                  [link to newspaper]
-                 [🤖 Talk to TARS]  [📰 Start Briefing]
+                 [🤖 Talk to GMS]  [📰 Start Briefing]
 
 Option A ─── Tap the link → read the full newspaper in your browser
 Option B ─── Tap Start Briefing → 90-second voice note plays
-Option C ─── Tap Talk to TARS → TARS greets you with today's summary
+Option C ─── Tap Talk to GMS → GMS greets you with today's summary
                                   → free back-and-forth conversation
 ```
 
@@ -100,14 +100,14 @@ Option C ─── Tap Talk to TARS → TARS greets you with today's summary
 
 ---
 
-## TARS — The Briefing Agent
+## GMS — The Briefing Agent
 
-Personality modelled on TARS from *Interstellar*: precise, dry wit, zero fluff. Humor setting: 75%.
+Personality modelled on GMS from *Interstellar*: precise, dry wit, zero fluff. Humor setting: 75%.
 
-TARS holds the full briefing context from the moment you tap Talk to TARS. The conversation is completely open — ask about any story, go deeper on a topic, or ask something unrelated. Each session ends with a prompt to add items to your watchlist.
+GMS holds the full briefing context from the moment you tap Talk to GMS. The conversation is completely open — ask about any story, go deeper on a topic, or ask something unrelated. Each session ends with a prompt to add items to your watchlist.
 
 ```
-TARS:  "Morning. Markets are mixed, geopolitics are not.
+GMS:  "Morning. Markets are mixed, geopolitics are not.
         Here's what actually matters today:
 
         World: [weighted summary — 2-3 sentences if significant]
@@ -118,24 +118,24 @@ TARS:  "Morning. Markets are mixed, geopolitics are not.
         What do you want to dig into?"
 
 You:   "Tell me more about the Fed decision."
-TARS:  [expands with context from today's briefing]
+GMS:  [expands with context from today's briefing]
 ```
 
 ---
 
 ## Watchlist
 
-Track ongoing stories across sessions. TARS monitors them daily and surfaces updates automatically.
+Track ongoing stories across sessions. GMS monitors them daily and surfaces updates automatically.
 
 ```
 You:   "Keep an eye on the SpaceX IPO"
-TARS:  "Added. I'll flag updates each morning."
+GMS:  "Added. I'll flag updates each morning."
 
 You:   "What am I tracking?"
-TARS:  "Currently tracking: SpaceX IPO (added May 07)"
+GMS:  "Currently tracking: SpaceX IPO (added May 07)"
 
 You:   "Drop the SpaceX story"
-TARS:  "Removed SpaceX IPO from your watchlist."
+GMS:  "Removed SpaceX IPO from your watchlist."
 ```
 
 Stored in `data/watchlist.yaml`. Persists across sessions and pipeline runs.
@@ -169,7 +169,7 @@ Every bullet is required to answer both **what happened** and **why it matters**
 ```
 News_AI_Agent/
 ├── main.py                     # Entry point — scheduler + bot + health server
-├── bot.py                      # Telegram bot — TARS conversation, watchlist, briefing
+├── bot.py                      # Telegram bot — GMS conversation, watchlist, briefing
 ├── pipeline.py                 # Pipeline — fetch all topics, render HTML, voice script
 ├── state.py                    # In-memory shared state (topics, voice script, status)
 ├── config.yaml                 # LLM, TTS, schedule, topics configuration

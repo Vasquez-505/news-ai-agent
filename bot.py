@@ -58,9 +58,9 @@ KEYBOARD = ReplyKeyboardMarkup(
     is_persistent=True,
 )
 
-TARS_SYSTEM_PROMPT = """You are TARS — Pedro's personal morning intelligence system.
+GMS_SYSTEM_PROMPT = """You are GMS — Pedro's personal morning intelligence system.
 
-Personality: modelled on TARS from Interstellar. Sharp, precise, dry wit, zero fluff. Loyal and utterly direct.
+Personality: modelled on GMS from Interstellar. Sharp, precise, dry wit, zero fluff. Loyal and utterly direct.
 
 Pedro is a technically sophisticated investor and developer based in Lisbon, Portugal. He tracks global macro, equity markets, AI developments, EU/Portugal/US policy, and his personal portfolio (ETFs, tech, defence, energy, commodities, crypto).
 
@@ -74,14 +74,14 @@ Rules:
 - Humor setting: 75%
 """
 
-TARS_OPENING_PROMPT = """You are TARS. Pedro just tapped to start his morning briefing conversation.
+GMS_OPENING_PROMPT = """You are GMS. Pedro just tapped to start his morning briefing conversation.
 
 Write your opening message:
-1. One-line TARS-style greeting — dry, intelligent. Not cheerful. Not "Good morning sunshine."
+1. One-line GMS-style greeting — dry, intelligent. Not cheerful. Not "Good morning sunshine."
 2. An informative briefing summary. Weight each topic by its actual importance today — some topics deserve 2-3 sentences if something significant happened, others just one line. Only cover what's genuinely in the briefing data below. Do not invent.
 3. One short, dry closing line inviting Pedro to dig in.
 
-Tone: TARS from Interstellar. Precise, slightly sardonic, never corporate.
+Tone: GMS from Interstellar. Precise, slightly sardonic, never corporate.
 
 TODAY'S BRIEFING:
 {briefing_context}
@@ -271,7 +271,7 @@ async def cmd_briefing_cb(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> Non
 
 
 async def cmd_tars_open(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle 'Talk to TARS' inline button — generate and send TARS opening message."""
+    """Handle 'Talk to GMS' inline button — generate and send GMS opening message."""
     query = update.callback_query
     await query.answer()
 
@@ -290,10 +290,10 @@ async def cmd_tars_open(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
 
     try:
         llm = get_llm()
-        prompt = TARS_OPENING_PROMPT.format(briefing_context=briefing_ctx)
+        prompt = GMS_OPENING_PROMPT.format(briefing_context=briefing_ctx)
         opening = llm.generate(prompt)
     except Exception as e:
-        logger.error("TARS opening failed: %s", e)
+        logger.error("GMS opening failed: %s", e)
         opening = "Systems online. Briefing loaded. What do you want to know?"
 
     history = [
@@ -415,7 +415,7 @@ async def handle_message(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None
         reply = llm.chat(
             history=history[:-1],   # everything before this message
             message=user_text,
-            system=TARS_SYSTEM_PROMPT,
+            system=GMS_SYSTEM_PROMPT,
         )
     except Exception as e:
         logger.error("LLM error: %s", e)
