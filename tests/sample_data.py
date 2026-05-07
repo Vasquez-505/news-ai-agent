@@ -23,44 +23,44 @@ Why it matters: The Nvidia print confirms that AI capex is accelerating, not pla
                 {
                     "label": "BROAD INDICES",
                     "rows": [
-                        {"name": "S&P 500", "price": "5,432.10", "change_pct": 0.54, "rsi": 62.3, "ma200_pct": 8.5, "pct_52w_high": -2.1, "key_indicator": "CAPE: ~39 — expensive (avg 17) | vs 200d MA: +8.5%", "signal": "caution"},
-                        {"name": "Nasdaq 100", "price": "19,876.30", "change_pct": 0.91, "rsi": 65.1, "ma200_pct": 11.2, "pct_52w_high": -1.8, "key_indicator": "RSI: 65 — neutral | vs 200d MA: +11.2%", "signal": "neutral"},
-                        {"name": "VWCE (All-World)", "price": "128.40", "change_pct": 0.48, "rsi": 58.7, "ma200_pct": 6.3, "pct_52w_high": -3.2, "key_indicator": "vs 200d MA: +6.3% — uptrend", "signal": "green"},
+                        {"name": "S&P 500", "price": "$5,432.10", "change_pct": 0.54, "rsi": 62.3, "ma200_pct": 8.5, "pct_52w_high": -2.1, "key_indicator": "CAPE: ~39 — expensive (avg 17) | vs 200d MA: +8.5%", "signal": "caution"},
+                        {"name": "Nasdaq 100", "price": "$19,876.30", "change_pct": 0.91, "rsi": 65.1, "ma200_pct": 11.2, "pct_52w_high": -1.8, "key_indicator": "RSI: 65 — neutral | vs 200d MA: +11.2%", "signal": "neutral"},
+                        {"name": "VWCE (All-World)", "price": "€128.40", "change_pct": 0.48, "rsi": 58.7, "ma200_pct": 6.3, "pct_52w_high": -3.2, "key_indicator": "vs 200d MA: +6.3% — uptrend", "signal": "green"},
                     ]
                 },
                 {
                     "label": "MACRO",
                     "rows": [
-                        {"name": "Gold", "price": "3,480.50", "change_pct": 1.20, "rsi": 71.2, "ma200_pct": 28.4, "pct_52w_high": -0.5, "key_indicator": "Real yield: -0.3% (bullish) | G/S ratio: 84", "signal": "green"},
-                        {"name": "Silver", "price": "41.20", "change_pct": 2.10, "rsi": 68.5, "ma200_pct": 22.1, "pct_52w_high": -1.2, "key_indicator": "G/S ratio: 84 — BUY signal (>80 = silver cheap)", "signal": "green"},
-                        {"name": "WTI Oil", "price": "72.40", "change_pct": 0.33, "rsi": 51.0, "ma200_pct": 2.1, "pct_52w_high": -18.3, "key_indicator": "Fair value — buy zone at $55-60", "signal": "neutral"},
+                        {"name": "Gold", "price": "$3,480.50", "change_pct": 1.20, "rsi": 71.2, "ma200_pct": 28.4, "pct_52w_high": -0.5, "key_indicator": "Real yield: -0.3% (bullish) | G/S ratio: 84", "signal": "green"},
+                        {"name": "Silver", "price": "$41.20", "change_pct": 2.10, "rsi": 68.5, "ma200_pct": 22.1, "pct_52w_high": -1.2, "key_indicator": "G/S ratio: 84 — BUY signal (>80 = silver cheap)", "signal": "green"},
+                        {"name": "WTI Oil", "price": "$72.40", "change_pct": 0.33, "rsi": 51.0, "ma200_pct": 2.1, "pct_52w_high": -18.3, "key_indicator": "Fair value — buy zone at $55-60", "signal": "neutral"},
                         {"name": "EUR/USD", "price": "1.0842", "change_pct": -0.21, "rsi": 44.2, "ma200_pct": -1.8, "pct_52w_high": -5.1, "key_indicator": "Rate differential driven", "signal": "neutral"},
                         {"name": "DXY (Dollar)", "price": "104.20", "change_pct": 0.18, "rsi": 53.1, "ma200_pct": 1.2, "pct_52w_high": -3.8, "key_indicator": "Strong $ = headwind for gold & EM", "signal": "neutral"},
-                        {"name": "10Y Treasury", "price": "4.28", "change_pct": 0.03, "rsi": 55.0, "ma200_pct": None, "pct_52w_high": None, "key_indicator": "Real yield: +1.8% (bearish for gold) | Yield curve: +0.15% (normal)", "signal": "caution"},
-                        {"name": "VIX (Fear)", "price": "18.40", "change_pct": -3.20, "rsi": 38.0, "ma200_pct": None, "pct_52w_high": None, "key_indicator": "18.4 — elevated (complacency <15, fear >25)", "signal": "neutral"},
+                        {"name": "10Y Treasury", "price": "4.28%", "change_pct": 0.03, "rsi": 55.0, "ma200_pct": None, "pct_52w_high": None, "key_indicator": "Real yield: +1.8% (bearish for gold) | Yield curve: +0.15% (normal)", "signal": "caution"},
+                        {"name": "VIX (Fear)", "price": "18.40", "change_pct": -3.20, "rsi": 38.0, "ma200_pct": None, "pct_52w_high": None, "key_indicator": "VIX 18.4 — elevated (complacency <15, fear >25)", "signal": "neutral"},
                     ]
                 },
                 {
                     "label": "MAGNIFICENT 7",
                     "rows": [
-                        {"name": "Apple",     "price": "210.40", "change_pct":  0.82, "rsi": 56.1, "ma200_pct":  8.2, "pct_52w_high":  -4.1, "key_indicator": "-4.1% below 52W high",      "signal": "green"},
-                        {"name": "Microsoft", "price": "430.20", "change_pct":  0.62, "rsi": 58.2, "ma200_pct":  9.8, "pct_52w_high":  -5.4, "key_indicator": "-5.4% below 52W high",      "signal": "green"},
-                        {"name": "Alphabet",  "price": "175.80", "change_pct":  1.10, "rsi": 60.3, "ma200_pct": 12.3, "pct_52w_high":  -3.2, "key_indicator": "-3.2% below 52W high",      "signal": "green"},
-                        {"name": "Amazon",    "price": "195.60", "change_pct":  0.91, "rsi": 62.4, "ma200_pct": 14.1, "pct_52w_high":  -6.7, "key_indicator": "-6.7% below 52W high",      "signal": "green"},
-                        {"name": "Nvidia",    "price": "880.30", "change_pct":  3.21, "rsi": 72.1, "ma200_pct": 42.3, "pct_52w_high":  -8.2, "key_indicator": "-8.2% below 52W high",      "signal": "caution"},
-                        {"name": "Meta",      "price": "564.10", "change_pct":  0.91, "rsi": 61.4, "ma200_pct": 14.2, "pct_52w_high": -12.1, "key_indicator": "-12.1% below 52W high",     "signal": "green"},
-                        {"name": "Tesla",     "price": "280.50", "change_pct": -1.20, "rsi": 45.2, "ma200_pct": -3.4, "pct_52w_high": -31.2, "key_indicator": "-31.2% below 52W high",     "signal": "caution"},
+                        {"name": "Apple",     "price": "$210.40", "change_pct":  0.82, "rsi": 56.1, "ma200_pct":  8.2, "pct_52w_high":  -4.1, "key_indicator": "-4.1% below 52W high",   "signal": "green"},
+                        {"name": "Microsoft", "price": "$430.20", "change_pct":  0.62, "rsi": 58.2, "ma200_pct":  9.8, "pct_52w_high":  -5.4, "key_indicator": "-5.4% below 52W high",   "signal": "green"},
+                        {"name": "Alphabet",  "price": "$175.80", "change_pct":  1.10, "rsi": 60.3, "ma200_pct": 12.3, "pct_52w_high":  -3.2, "key_indicator": "-3.2% below 52W high",   "signal": "green"},
+                        {"name": "Amazon",    "price": "$195.60", "change_pct":  0.91, "rsi": 62.4, "ma200_pct": 14.1, "pct_52w_high":  -6.7, "key_indicator": "-6.7% below 52W high",   "signal": "green"},
+                        {"name": "Nvidia",    "price": "$880.30", "change_pct":  3.21, "rsi": 72.1, "ma200_pct": 42.3, "pct_52w_high":  -8.2, "key_indicator": "-8.2% below 52W high",   "signal": "caution"},
+                        {"name": "Meta",      "price": "$564.10", "change_pct":  0.91, "rsi": 61.4, "ma200_pct": 14.2, "pct_52w_high": -12.1, "key_indicator": "-12.1% below 52W high",  "signal": "green"},
+                        {"name": "Tesla",     "price": "$280.50", "change_pct": -1.20, "rsi": 45.2, "ma200_pct": -3.4, "pct_52w_high": -31.2, "key_indicator": "-31.2% below 52W high",  "signal": "caution"},
                     ]
                 },
                 {
                     "label": "SECTOR PULSE",
                     "rows": [
-                        {"name": "Tech / AI (XLK)",           "price": "205.40", "change_pct":  1.20, "rsi": 62.1, "ma200_pct": 10.4, "pct_52w_high":  -3.8, "key_indicator": "+2.3% vs SPY (1M) — outperforming market",  "signal": "green"},
-                        {"name": "Energy (XLE)",               "price":  "88.20", "change_pct": -0.40, "rsi": 47.8, "ma200_pct": -2.1, "pct_52w_high": -12.4, "key_indicator": "-3.1% vs SPY (1M) — underperforming market", "signal": "caution"},
-                        {"name": "Oil & Gas (XOP)",            "price": "112.30", "change_pct": -0.80, "rsi": 44.2, "ma200_pct": -4.2, "pct_52w_high": -18.7, "key_indicator": "-4.8% vs SPY (1M) — underperforming market", "signal": "caution"},
-                        {"name": "Aerospace & Defense (ITA)",  "price": "148.60", "change_pct":  1.80, "rsi": 65.3, "ma200_pct": 12.7, "pct_52w_high":  -2.1, "key_indicator": "+3.4% vs SPY (1M) — outperforming market",  "signal": "green"},
-                        {"name": "FinTech (FINX)",             "price":  "45.20", "change_pct":  0.60, "rsi": 54.1, "ma200_pct":  3.2, "pct_52w_high":  -8.3, "key_indicator": "+0.3% vs SPY (1M) — in line with market",   "signal": "neutral"},
-                        {"name": "Quantum Computing (QTUM)",   "price":  "38.40", "change_pct":  2.10, "rsi": 67.4, "ma200_pct": 18.4, "pct_52w_high":  -9.6, "key_indicator": "+5.2% vs SPY (1M) — outperforming market",  "signal": "green"},
+                        {"name": "Tech / AI (XLK)",           "price": "$205.40", "change_pct":  1.20, "rsi": 62.1, "ma200_pct": 10.4, "pct_52w_high":  -3.8, "key_indicator": "+2.3% vs SPY (1M) — outperforming market",  "signal": "green"},
+                        {"name": "Energy (XLE)",               "price":  "$88.20", "change_pct": -0.40, "rsi": 47.8, "ma200_pct": -2.1, "pct_52w_high": -12.4, "key_indicator": "-3.1% vs SPY (1M) — underperforming market", "signal": "caution"},
+                        {"name": "Oil & Gas (XOP)",            "price": "$112.30", "change_pct": -0.80, "rsi": 44.2, "ma200_pct": -4.2, "pct_52w_high": -18.7, "key_indicator": "-4.8% vs SPY (1M) — underperforming market", "signal": "caution"},
+                        {"name": "Aerospace & Defense (ITA)",  "price": "$148.60", "change_pct":  1.80, "rsi": 65.3, "ma200_pct": 12.7, "pct_52w_high":  -2.1, "key_indicator": "+3.4% vs SPY (1M) — outperforming market",  "signal": "green"},
+                        {"name": "FinTech (FINX)",             "price":  "$45.20", "change_pct":  0.60, "rsi": 54.1, "ma200_pct":  3.2, "pct_52w_high":  -8.3, "key_indicator": "+0.3% vs SPY (1M) — in line with market",   "signal": "neutral"},
+                        {"name": "Quantum Computing (QTUM)",   "price":  "$38.40", "change_pct":  2.10, "rsi": 67.4, "ma200_pct": 18.4, "pct_52w_high":  -9.6, "key_indicator": "+5.2% vs SPY (1M) — outperforming market",  "signal": "green"},
                     ]
                 },
                 {

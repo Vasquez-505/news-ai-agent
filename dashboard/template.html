@@ -164,8 +164,8 @@
     padding: 1.75rem var(--col-gap) 1.75rem;
   }
 
-  .topic-section:first-child { padding-left: 0; }
-  .topic-section:last-child  { padding-right: 0; }
+  .topics-grid .topic-section:nth-child(3n+1) { padding-left: 0; }
+  .topics-grid .topic-section:nth-child(3n+3) { padding-right: 0; }
 
   /* Full-width sections */
   .full-width {
@@ -487,34 +487,54 @@
 
   /* ── EXTRAS BAR ───────────────────────────────────────── */
   .macro-extras-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.25rem;
-    margin-top: 1rem;
-    padding-top: 0.75rem;
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
     border-top: 1px solid var(--cream-mid);
   }
 
-  .extras-chip {
+  .extras-bar-label {
     font-family: var(--font-sans);
-    font-size: 0.62rem;
-    color: var(--ink-mid);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 0.55rem;
+  }
+
+  .extras-chips-row {
     display: flex;
-    align-items: center;
-    gap: 0.3rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .extras-chip {
+    background: var(--cream);
+    border: 1px solid rgba(42,42,42,0.14);
+    border-radius: 2px;
+    padding: 0.35rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    min-width: 7rem;
   }
 
   .extras-chip-label {
+    font-family: var(--font-sans);
+    font-size: 0.55rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     color: var(--ink-light);
     font-weight: 600;
   }
 
   .extras-chip-value {
     font-family: var(--font-mono);
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.8rem;
     color: var(--ink);
+    letter-spacing: 0.02em;
   }
 
   /* ── CHANGE & RSI COLOURING ───────────────────────────── */
@@ -596,7 +616,10 @@
         </tbody>
       </table>
       {% if macro_extras_html %}
-      <div class="macro-extras-bar">{{ macro_extras_html }}</div>
+      <div class="macro-extras-bar">
+        <div class="extras-bar-label">Derived Metrics</div>
+        <div class="extras-chips-row">{{ macro_extras_html }}</div>
+      </div>
       {% endif %}
     </div>
 

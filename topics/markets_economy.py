@@ -95,15 +95,21 @@ def _calc_1m_return(closes: pd.Series) -> float | None:
         return None
 
 
+_UNITLESS = {"^VIX", "DX-Y.NYB", "EURUSD=X"}  # indices / rates — no currency symbol
+_EUR_TICKERS = {"VWCE.DE"}
+
 def _fmt_price(price: float, ticker: str = "") -> str:
     try:
-        if ticker in ("^TNX", "^VIX", "EURUSD=X", "DX-Y.NYB"):
+        if ticker == "^TNX":
+            return f"{price:.2f}%"
+        if ticker in _UNITLESS:
             return f"{price:.2f}"
+        prefix = "€" if ticker in _EUR_TICKERS else "$"
         if price > 10000:
-            return f"{price:,.0f}"
+            return f"{prefix}{price:,.0f}"
         if price > 100:
-            return f"{price:,.2f}"
-        return f"{price:.4f}" if price < 5 else f"{price:.2f}"
+            return f"{prefix}{price:,.2f}"
+        return f"{prefix}{price:.4f}" if price < 5 else f"{prefix}{price:.2f}"
     except Exception:
         return "—"
 
