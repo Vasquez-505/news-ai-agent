@@ -87,7 +87,7 @@ Option C ─── Tap Talk to GMS → GMS greets you with today's summary
 
 | Component | Technology | Cost |
 |-----------|-----------|------|
-| LLM + Search | Gemini 2.0 Flash (Google Search Grounding) | Free — 1,500 req/day |
+| LLM + Search | Gemma 4 31B IT (Google Search Grounding) | Free — via Google AI Studio |
 | Bot framework | python-telegram-bot 21.x | Free |
 | TTS | edge-tts (Microsoft Neural — en-US-GuyNeural) | Free |
 | Scheduling | APScheduler (on Render) + GitHub Actions | Free |
