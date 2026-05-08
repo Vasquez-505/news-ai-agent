@@ -81,10 +81,9 @@ async def main():
     # --- Scheduler ---
     scheduler = AsyncIOScheduler(timezone=timezone)
     scheduler.add_job(
-        lambda: asyncio.create_task(
-            _scheduled_fetch(app.bot, chat_id, dashboard_url, watchlist)
-        ),
+        _scheduled_fetch,
         CronTrigger(hour=hour, minute=minute, timezone=timezone),
+        args=[app.bot, chat_id, dashboard_url, watchlist or []],
         id="morning_fetch",
         replace_existing=True,
     )
@@ -92,7 +91,7 @@ async def main():
     logger.info("Scheduler started")
     await app.initialize()
     await app.start()
-    await app.updater.start_polling(allowed_updates=["message"])
+    await app.updater.start_polling(allowed_updates=["message", "callback_query"])
     logger.info("Telegram bot started")
 
     # --- Health-check HTTP server (required by Render, used by UptimeRobot) ---
