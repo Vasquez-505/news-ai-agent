@@ -3,8 +3,10 @@ Morning pipeline: fetch all topics -> render HTML -> build voice script.
 Called by the APScheduler at 5AM and by the /reload Telegram command.
 """
 
+import json
 import logging
 import asyncio
+import math
 import yaml
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -166,4 +168,38 @@ async def run_pipeline(output_dir: str = "output", watchlist: list = None) -> st
         )
 
     state.set_fetch_status(f"Ready. {status_msg}")
+
+    # Save briefing_data.json alongside the HTML so Render can load it without
+    # re-running the pipeline. Render reads this at 5am instead of calling the APIs again.
+    try:
+        json_path = Path(output_dir) / "briefing_data.json"
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "generated_at": datetime.now().isoformat(),
+                    "topics": _sanitize_for_json(topics),
+                    "voice_script": state.get_voice_script(),
+                },
+                f,
+                ensure_ascii=False,
+                indent=2,
+            )
+        logger.info("Briefing data saved to %s", json_path)
+    except Exception as e:
+        logger.error("Failed to save briefing_data.json: %s", e)
+
     return html_path
+
+
+def _sanitize_for_json(obj):
+    """Recursively replace NaN/Infinity floats and non-serialisable types."""
+    if isinstance(obj, dict):
+        return {k: _sanitize_for_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_sanitize_for_json(v) for v in obj]
+    if isinstance(obj, float):
+        return None if (math.isnan(obj) or math.isinf(obj)) else obj
+    if isinstance(obj, (str, int, bool, type(None))):
+        return obj
+    return str(obj)
