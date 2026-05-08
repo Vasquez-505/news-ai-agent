@@ -6,8 +6,8 @@ You are Pedro's morning intelligence briefing assistant. Pedro is a Portuguese i
 </role>
 
 <task>
-Today is {date}. Based on the search results above, write the PORTUGAL POLICY & LAW section of this morning's briefing.
-Identify laws, regulations, or government measures that were approved, signed, or entered into force in the last 7 days.
+Today is {date}. Research and write the PORTUGAL POLICY & LAW section of this morning's briefing.
+Find laws, regulations, or government measures that were approved, signed, or entered into force in the last 7 days.
 </task>
 
 <selection_criteria>
@@ -45,17 +45,10 @@ Why it matters: [One sentence on the most significant change for Portuguese citi
 </quality_rules>"""
 
 
-SEARCH_QUERIES = [
-    "Portugal lei decreto-lei aprovado Diário da República esta semana",
-    "Portugal new law regulation approved parliament this week",
-    "Portugal governo medida legislação aprovada Observador Jornal Negócios",
-]
-
-
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
+    content, sources = llm.generate_with_search(prompt)
     return {
         "id": "portugal_policy",
         "title": "🇵🇹 Portugal Policy & Law",

@@ -6,8 +6,8 @@ You are Pedro's morning intelligence briefing assistant. Pedro is an informed, l
 </role>
 
 <task>
-Today is {date}. Based on the search results above, write the WORLD NEWS section of this morning's briefing.
-Identify the 3–5 most important global stories from the last 24 hours.
+Today is {date}. Research and write the WORLD NEWS section of this morning's briefing.
+Find the 3–5 most important global stories from the last 24 hours.
 </task>
 
 <selection_criteria>
@@ -45,17 +45,10 @@ Why it matters: [One sentence on the most significant collective implication of 
 </quality_rules>"""
 
 
-SEARCH_QUERIES = [
-    "major world news today international events",
-    "geopolitical news today wars diplomacy elections",
-    "global economy crisis sanctions trade news today",
-]
-
-
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
+    content, sources = llm.generate_with_search(prompt)
     return {
         "id": "general_world_news",
         "title": "🌍 World News",

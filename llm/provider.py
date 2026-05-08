@@ -2,7 +2,8 @@ import logging
 import os
 import time
 import yaml
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
@@ -12,23 +13,30 @@ load_dotenv()
 _RETRY_ATTEMPTS = 3
 _RETRY_WAIT = 35  # seconds — just over the 429 retry_delay Gemini returns
 
-# Gemini 2.5 Flash is used exclusively for news synthesis (Tavily context + generation).
-# It has 250 free RPD and produces noticeably better quality briefings than Gemma.
-# The configured model (Gemma) handles plain generation and all chat calls,
-# where quota matters more than peak quality.
-_SEARCH_SYNTHESIS_MODEL = "gemini-2.5-flash"
+# Gemini 2.5 Flash handles all generate_with_search() calls — native Google
+# Search grounding means it searches Google's full index and synthesises in
+# one call, no external search API needed.
+# The configured model (Gemma) handles generate() and chat() — higher quota,
+# no grounding needed for plain text generation and bot conversations.
+_SEARCH_MODEL = "gemini-2.5-flash"
 
 
 def _call_with_retry(fn):
-    """Call fn(), retrying up to _RETRY_ATTEMPTS times on 429 quota errors."""
+    """Call fn(), retrying on 429 (quota) and 500 (transient server) errors."""
     for attempt in range(1, _RETRY_ATTEMPTS + 1):
         try:
             return fn()
         except Exception as e:
-            if "429" in str(e) and attempt < _RETRY_ATTEMPTS:
+            msg = str(e)
+            is_last = attempt >= _RETRY_ATTEMPTS
+            if "429" in msg and not is_last:
                 logger.warning("Rate limited (429), waiting %ds before retry %d/%d",
                                _RETRY_WAIT, attempt, _RETRY_ATTEMPTS - 1)
                 time.sleep(_RETRY_WAIT)
+            elif "500" in msg and not is_last:
+                logger.warning("Server error (500), waiting 5s before retry %d/%d",
+                               attempt, _RETRY_ATTEMPTS - 1)
+                time.sleep(5)
             else:
                 raise
 
@@ -41,92 +49,90 @@ def load_config():
 def get_llm():
     config = load_config()
     provider = config["llm"]["provider"]
-    model = config["llm"]["model"]
+    model    = config["llm"]["model"]
 
     if provider == "gemini":
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-        return GeminiProvider(model)
+        api_key = os.getenv("GEMINI_API_KEY")
+        return GeminiProvider(model, api_key)
     else:
         raise ValueError(f"Unsupported LLM provider: {provider}")
 
 
 class GeminiProvider:
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, api_key: str):
         self.model_name = model_name
-        self.model = genai.GenerativeModel(model_name)
-        self._synthesis_model = genai.GenerativeModel(_SEARCH_SYNTHESIS_MODEL)
+        self.client = genai.Client(api_key=api_key)
 
     def generate(self, prompt: str) -> str:
         """Plain generation using the configured model (Gemma)."""
-        response = _call_with_retry(lambda: self.model.generate_content(prompt))
+        response = _call_with_retry(
+            lambda: self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+            )
+        )
         return response.text.strip()
 
-    def generate_with_search(self, prompt: str, search_queries: list[str] | None = None) -> tuple[str, list[dict]]:
+    def generate_with_search(self, prompt: str) -> tuple[str, list[dict]]:
         """
-        Fetches live context via Tavily, then synthesises with gemini-2.5-flash.
-        Falls back to plain generate() on any failure.
+        Generate with native Google Search grounding via Gemini 2.5 Flash.
+        Gemini searches Google's full index as part of generation — no external
+        search API needed. Falls back to plain generate() on any failure.
         Returns (text, sources).
         """
-        tavily_key = os.getenv("TAVILY_API_KEY")
-        if search_queries and tavily_key:
-            return self._tavily_then_synthesise(prompt, search_queries)
-
-        # No Tavily available — degrade gracefully to plain generate
-        logger.warning("No Tavily key or search_queries; generating without live context")
-        return self.generate(prompt), []
-
-    def _tavily_then_synthesise(self, prompt: str, search_queries: list[str]) -> tuple[str, list[dict]]:
-        """Search with Tavily, inject results, synthesise with gemini-2.5-flash."""
         try:
-            from search.searcher import multi_search
-            results = multi_search(search_queries, max_per_query=4)
-
-            if not results:
-                logger.warning("Tavily returned no results; generating without live context")
-                return self.generate(prompt), []
-
-            context_block = "\n\n".join(
-                f"[{i + 1}] {r['title']}\nURL: {r['url']}\n{r['content'][:500]}"
-                for i, r in enumerate(results[:12])
+            response = _call_with_retry(
+                lambda: self.client.models.generate_content(
+                    model=_SEARCH_MODEL,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        tools=[types.Tool(google_search=types.GoogleSearch())],
+                    ),
+                )
             )
-            augmented_prompt = (
-                f"<search_results>\n{context_block}\n</search_results>\n\n"
-                f"Use the search results above as your primary source for today's news. "
-                f"Only cite facts that appear in those results — do not invent sources. "
-                f"Output only the final briefing text — no internal reasoning, no self-correction, no meta-commentary.\n\n"
-                + prompt
-            )
+            text = response.text.strip()
+            if not text:
+                raise ValueError("Empty response from grounding")
 
-            # Try gemini-2.5-flash first; fall back to configured model if quota is hit
+            sources = []
             try:
-                response = _call_with_retry(
-                    lambda: self._synthesis_model.generate_content(augmented_prompt)
-                )
-            except Exception as e:
-                logger.warning(
-                    "%s synthesis failed (%s); falling back to %s",
-                    _SEARCH_SYNTHESIS_MODEL, e, self.model_name,
-                )
-                response = _call_with_retry(
-                    lambda: self.model.generate_content(augmented_prompt)
-                )
+                chunks = response.candidates[0].grounding_metadata.grounding_chunks
+                seen = set()
+                for chunk in chunks:
+                    if hasattr(chunk, "web") and chunk.web:
+                        url   = chunk.web.uri   or ""
+                        title = chunk.web.title or url
+                        if url and url not in seen:
+                            seen.add(url)
+                            sources.append({"title": title, "url": url})
+            except (AttributeError, IndexError):
+                pass
 
-            sources = [{"title": r["title"], "url": r["url"]} for r in results if r.get("url")]
-            return response.text.strip(), sources
+            return text, sources
 
         except Exception as e:
-            logger.warning("Tavily search failed (%s); generating without live context", e)
+            logger.warning("Grounding failed (%s); falling back to plain generate", e)
             return self.generate(prompt), []
 
     def chat(self, history: list[dict], message: str, system: str = "") -> str:
         """
-        Multi-turn chat using the configured model (Gemma) — high quota, good for Q&A.
+        Multi-turn chat using the configured model (Gemma).
         history: list of {"role": "user"|"model", "parts": [str]} dicts.
         """
-        model = genai.GenerativeModel(
-            self.model_name,
+        chat_history = [
+            types.Content(
+                role=msg["role"],
+                parts=[types.Part(text=p) for p in msg["parts"]],
+            )
+            for msg in history
+        ]
+        config = types.GenerateContentConfig(
             system_instruction=system if system else None,
         )
-        session = model.start_chat(history=history)
-        response = _call_with_retry(lambda: session.send_message(message))
+        chat_session = self.client.chats.create(
+            model=self.model_name,
+            config=config,
+            history=chat_history,
+        )
+        response = _call_with_retry(lambda: chat_session.send_message(message))
         return response.text.strip()

@@ -6,8 +6,8 @@ You are Pedro's morning intelligence briefing assistant. Pedro works with AI too
 </role>
 
 <task>
-Today is {date}. Based on the search results above, write the AI & PRODUCTIVITY section of this morning's briefing.
-Identify the most significant AI model releases and product launches from the last 48 hours.
+Today is {date}. Research and write the AI & PRODUCTIVITY section of this morning's briefing.
+Find the most significant AI model releases and product launches from the last 48 hours.
 </task>
 
 <selection_criteria>
@@ -44,17 +44,10 @@ Why it matters: [One sentence on the most significant shift in the AI landscape 
 </quality_rules>"""
 
 
-SEARCH_QUERIES = [
-    "AI model release today OpenAI Anthropic Google DeepMind Meta",
-    "new AI tool product launch shipped today 2026",
-    "Cursor Notion Perplexity AI feature update release today",
-]
-
-
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
+    content, sources = llm.generate_with_search(prompt)
     return {
         "id": "ai_productivity",
         "title": "⚡ AI & Productivity",

@@ -21,8 +21,8 @@ Pedro has Claude Pro — full access to all Claude models and Claude Code.
 
 <task>
 Today is {date}. Do two things:
-1. Using the search results above AND the AI news context below, identify any AI tool releases, pricing changes, or significant capability updates from the last 24 hours.
-2. Generate the AI TOOLS SNAPSHOT — comparing Pedro's current tools against today's best alternatives.
+1. Research any AI tool releases, pricing changes, or significant capability updates from the last 24 hours.
+2. Using those findings AND the AI news context below, generate the AI TOOLS SNAPSHOT — comparing Pedro's current tools against today's best alternatives.
 </task>
 
 <todays_ai_news>
@@ -61,13 +61,6 @@ Takeaway: [One sentence — the single most actionable change Pedro could make t
 </quality_rules>"""
 
 
-SEARCH_QUERIES = [
-    "AI tool app pricing update release today 2026",
-    "ChatGPT Claude Gemini Perplexity Cursor update feature today",
-    "new AI productivity tool launched today comparison",
-]
-
-
 def fetch(ai_productivity_content: str = "") -> dict:
     llm = get_llm()
     tools_list = "\n".join(f"- {cat}: {tool}" for cat, tool in PEDRO_TOOLS.items())
@@ -78,7 +71,7 @@ def fetch(ai_productivity_content: str = "") -> dict:
         tools_list=tools_list,
         ai_productivity_context=context,
     )
-    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
+    content, sources = llm.generate_with_search(prompt)
     return {
         "id": "ai_tools_snapshot",
         "title": "AI Tools Snapshot",

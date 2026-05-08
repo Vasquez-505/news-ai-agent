@@ -6,8 +6,8 @@ You are Pedro's morning intelligence briefing assistant. Pedro is a Portuguese i
 </role>
 
 <task>
-Today is {date}. Based on the search results above, write the EUROPEAN UNION POLICY section of this morning's briefing.
-Identify EU regulations, directives, or decisions formally approved or entering into force in the last 7 days.
+Today is {date}. Research and write the EUROPEAN UNION POLICY section of this morning's briefing.
+Find EU regulations, directives, or decisions formally approved or entering into force in the last 7 days.
 </task>
 
 <selection_criteria>
@@ -45,17 +45,10 @@ Why it matters: [One sentence on the most significant EU-level change this week]
 </quality_rules>"""
 
 
-SEARCH_QUERIES = [
-    "EU regulation directive adopted enacted Official Journal this week",
-    "European Commission decision regulation this week",
-    "European Parliament Council regulation approved Euractiv Politico Europe",
-]
-
-
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
+    content, sources = llm.generate_with_search(prompt)
     return {
         "id": "eu_policy",
         "title": "🇪🇺 European Union Policy",

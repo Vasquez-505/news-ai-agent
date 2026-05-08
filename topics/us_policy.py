@@ -6,8 +6,8 @@ You are Pedro's morning intelligence briefing assistant. Pedro is a long-term in
 </role>
 
 <task>
-Today is {date}. Based on the search results above, write the UNITED STATES POLICY section of this morning's briefing.
-Identify executive orders signed, legislation enacted, or major regulatory actions issued in the last 48 hours.
+Today is {date}. Research and write the UNITED STATES POLICY section of this morning's briefing.
+Find executive orders signed, legislation enacted, or major regulatory actions issued in the last 48 hours.
 </task>
 
 <selection_criteria>
@@ -44,17 +44,10 @@ Why it matters: [One sentence on the most significant US policy shift this week]
 </quality_rules>"""
 
 
-SEARCH_QUERIES = [
-    "US executive order signed White House this week",
-    "US legislation bill signed into law Congress this week",
-    "SEC FTC Federal Reserve regulatory action rule this week",
-]
-
-
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
+    content, sources = llm.generate_with_search(prompt)
     return {
         "id": "us_policy",
         "title": "🇺🇸 United States Policy",
