@@ -21,8 +21,8 @@ Pedro has Claude Pro — full access to all Claude models and Claude Code.
 
 <task>
 Today is {date}. Do two things:
-1. Search for any AI tool releases, pricing changes, or significant capability updates from the last 24 hours.
-2. Using those findings AND the AI news context below, generate the AI TOOLS SNAPSHOT — comparing Pedro's current tools against today's best alternatives.
+1. Using the search results above AND the AI news context below, identify any AI tool releases, pricing changes, or significant capability updates from the last 24 hours.
+2. Generate the AI TOOLS SNAPSHOT — comparing Pedro's current tools against today's best alternatives.
 </task>
 
 <todays_ai_news>

@@ -92,7 +92,8 @@ class GeminiProvider:
             augmented_prompt = (
                 f"<search_results>\n{context_block}\n</search_results>\n\n"
                 f"Use the search results above as your primary source for today's news. "
-                f"Only cite facts that appear in those results — do not invent sources.\n\n"
+                f"Only cite facts that appear in those results — do not invent sources. "
+                f"Output only the final briefing text — no internal reasoning, no self-correction, no meta-commentary.\n\n"
                 + prompt
             )
 

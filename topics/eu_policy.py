@@ -6,8 +6,8 @@ You are Pedro's morning intelligence briefing assistant. Pedro is a Portuguese i
 </role>
 
 <task>
-Today is {date}. Search for and write the EUROPEAN UNION POLICY section of this morning's briefing.
-Find EU regulations, directives, or decisions formally approved or entering into force in the last 7 days.
+Today is {date}. Based on the search results above, write the EUROPEAN UNION POLICY section of this morning's briefing.
+Identify EU regulations, directives, or decisions formally approved or entering into force in the last 7 days.
 </task>
 
 <selection_criteria>
