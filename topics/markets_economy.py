@@ -551,7 +551,12 @@ def fetch() -> dict:
         date=datetime.now().strftime("%A, %B %d, %Y"),
         macro_data=macro_text,
     )
-    content, sources = llm.generate_with_search(prompt)
+    search_queries = [
+        "stock market today S&P 500 Nasdaq performance",
+        "macro economy Fed interest rates inflation today",
+        "global markets bonds crypto news today",
+    ]
+    content, sources = llm.generate_with_search(prompt, search_queries=search_queries)
 
     return {
         "id":      "investment_markets",
