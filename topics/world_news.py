@@ -45,10 +45,17 @@ Why it matters: [One sentence on the most significant collective implication of 
 </quality_rules>"""
 
 
+SEARCH_QUERIES = [
+    "major world news today international events",
+    "geopolitical news today wars diplomacy elections",
+    "global economy crisis sanctions trade news today",
+]
+
+
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt)
+    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
     return {
         "id": "general_world_news",
         "title": "🌍 World News",

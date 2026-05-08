@@ -45,10 +45,17 @@ Why it matters: [One sentence on the most significant EU-level change this week]
 </quality_rules>"""
 
 
+SEARCH_QUERIES = [
+    "EU regulation directive adopted enacted Official Journal this week",
+    "European Commission decision regulation this week",
+    "European Parliament Council regulation approved Euractiv Politico Europe",
+]
+
+
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt)
+    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
     return {
         "id": "eu_policy",
         "title": "🇪🇺 European Union Policy",

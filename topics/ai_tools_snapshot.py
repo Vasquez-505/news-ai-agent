@@ -61,6 +61,13 @@ Takeaway: [One sentence — the single most actionable change Pedro could make t
 </quality_rules>"""
 
 
+SEARCH_QUERIES = [
+    "AI tool app pricing update release today 2026",
+    "ChatGPT Claude Gemini Perplexity Cursor update feature today",
+    "new AI productivity tool launched today comparison",
+]
+
+
 def fetch(ai_productivity_content: str = "") -> dict:
     llm = get_llm()
     tools_list = "\n".join(f"- {cat}: {tool}" for cat, tool in PEDRO_TOOLS.items())
@@ -71,7 +78,7 @@ def fetch(ai_productivity_content: str = "") -> dict:
         tools_list=tools_list,
         ai_productivity_context=context,
     )
-    content, sources = llm.generate_with_search(prompt)
+    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
     return {
         "id": "ai_tools_snapshot",
         "title": "AI Tools Snapshot",

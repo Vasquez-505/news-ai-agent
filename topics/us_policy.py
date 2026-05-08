@@ -44,10 +44,17 @@ Why it matters: [One sentence on the most significant US policy shift this week]
 </quality_rules>"""
 
 
+SEARCH_QUERIES = [
+    "US executive order signed White House this week",
+    "US legislation bill signed into law Congress this week",
+    "SEC FTC Federal Reserve regulatory action rule this week",
+]
+
+
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt)
+    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
     return {
         "id": "us_policy",
         "title": "🇺🇸 United States Policy",

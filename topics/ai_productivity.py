@@ -44,10 +44,17 @@ Why it matters: [One sentence on the most significant shift in the AI landscape 
 </quality_rules>"""
 
 
+SEARCH_QUERIES = [
+    "AI model release today OpenAI Anthropic Google DeepMind Meta",
+    "new AI tool product launch shipped today 2026",
+    "Cursor Notion Perplexity AI feature update release today",
+]
+
+
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt)
+    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
     return {
         "id": "ai_productivity",
         "title": "⚡ AI & Productivity",

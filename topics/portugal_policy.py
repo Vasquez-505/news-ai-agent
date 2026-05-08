@@ -45,10 +45,17 @@ Why it matters: [One sentence on the most significant change for Portuguese citi
 </quality_rules>"""
 
 
+SEARCH_QUERIES = [
+    "Portugal lei decreto-lei aprovado Diário da República esta semana",
+    "Portugal new law regulation approved parliament this week",
+    "Portugal governo medida legislação aprovada Observador Jornal Negócios",
+]
+
+
 def fetch() -> dict:
     llm = get_llm()
     prompt = PROMPT.format(date=datetime.now().strftime("%A, %B %d, %Y"))
-    content, sources = llm.generate_with_search(prompt)
+    content, sources = llm.generate_with_search(prompt, search_queries=SEARCH_QUERIES)
     return {
         "id": "portugal_policy",
         "title": "🇵🇹 Portugal Policy & Law",
