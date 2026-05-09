@@ -23,7 +23,7 @@ from pathlib import Path
 
 import yaml
 from dotenv import load_dotenv
-from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, constants
+from telegram import Update, ReplyKeyboardRemove, InlineKeyboardMarkup, InlineKeyboardButton, constants
 from telegram.ext import (
     Application,
     CallbackQueryHandler,
@@ -52,11 +52,7 @@ DASHBOARD_URL = os.getenv("DASHBOARD_URL", "")
 
 WATCHLIST_PATH = Path("data/watchlist.yaml")
 
-KEYBOARD = ReplyKeyboardMarkup(
-    [["📰 Start Briefing"], ["📊 Status", "🔄 Reload"]],
-    resize_keyboard=True,
-    is_persistent=True,
-)
+KEYBOARD = ReplyKeyboardRemove()
 
 GMS_SYSTEM_PROMPT = """You are GMS — Pedro's personal morning intelligence system.
 
@@ -211,7 +207,7 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     if not _auth(update):
         return
     await update.message.reply_text(
-        "Good morning, sunshine. Tap 📰 Start Briefing for today's summary, "
+        "Good morning, sunshine. Use /briefing for today's summary, "
         "or just type any question.",
         reply_markup=KEYBOARD,
     )

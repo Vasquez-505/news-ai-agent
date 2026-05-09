@@ -110,7 +110,12 @@ async def _scheduled_fetch(bot, chat_id: int, dashboard_url: str, watchlist: lis
     else:
         text = f"📰 Your briefing for {date_str} is ready."
     try:
-        await bot.send_message(chat_id=chat_id, text=text)
+        from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+        inline_kb = InlineKeyboardMarkup([[
+            InlineKeyboardButton("🤖 Talk to GMS", callback_data="talk_to_tars"),
+            InlineKeyboardButton("📰 Start Briefing", callback_data="start_briefing"),
+        ]])
+        await bot.send_message(chat_id=chat_id, text=text, reply_markup=inline_kb)
         logger.info("Morning push sent to chat %d", chat_id)
     except Exception as e:
         logger.error("Failed to send morning push: %s", e)
