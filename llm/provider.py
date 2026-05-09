@@ -20,6 +20,15 @@ _RETRY_WAIT = 35  # seconds — just over the 429 retry_delay Gemini returns
 # no grounding needed for plain text generation and bot conversations.
 _SEARCH_MODEL = "gemini-2.5-flash"
 
+# Appended to every prompt to prevent LLM preamble/citation noise
+_OUTPUT_GUARD = (
+    "\n\nCRITICAL OUTPUT RULE: Begin your response immediately with the first "
+    "content item (bullet point, table row, or section header). "
+    "Do NOT write any opener like 'Here is your morning briefing', greetings, "
+    "or internal citations such as [cite: X from previous step]. "
+    "Output only the final briefing content."
+)
+
 
 def _call_with_retry(fn):
     """Call fn(), retrying on 429 (quota) and 500 (transient server) errors."""
@@ -68,7 +77,7 @@ class GeminiProvider:
         response = _call_with_retry(
             lambda: self.client.models.generate_content(
                 model=self.model_name,
-                contents=prompt,
+                contents=prompt + _OUTPUT_GUARD,
             )
         )
         return response.text.strip()
@@ -84,7 +93,7 @@ class GeminiProvider:
             response = _call_with_retry(
                 lambda: self.client.models.generate_content(
                     model=_SEARCH_MODEL,
-                    contents=prompt,
+                    contents=prompt + _OUTPUT_GUARD,
                     config=types.GenerateContentConfig(
                         tools=[types.Tool(google_search=types.GoogleSearch())],
                     ),

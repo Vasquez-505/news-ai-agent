@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 from datetime import date, datetime
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from pycoingecko import CoinGeckoAPI
 from fredapi import Fred
 from llm.provider import get_llm
@@ -47,6 +49,20 @@ SECTIONS = {
 }
 
 BTC_HALVING_4TH = date(2024, 4, 19)
+
+# Shared session with browser User-Agent to avoid Yahoo Finance rate-limiting
+_yf_session = requests.Session()
+_yf_session.headers.update({
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+})
+_retry = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+_yf_session.mount("https://", HTTPAdapter(max_retries=_retry))
 
 # ── HELPERS ────────────────────────────────────────────────────────────────────
 
@@ -367,7 +383,7 @@ def _fetch_sections(fred_data: dict, gs_ratio: float | None, fear_greed: dict | 
     # Pre-fetch SPY 1-month return for sector relative performance
     spy_1m_return = None
     try:
-        spy_hist = yf.Ticker("SPY").history(period="1y")
+        spy_hist = yf.Ticker("SPY", session=_yf_session).history(period="1y")
         if not spy_hist.empty:
             spy_1m_return = _calc_1m_return(spy_hist["Close"].dropna())
     except Exception:
@@ -381,7 +397,7 @@ def _fetch_sections(fred_data: dict, gs_ratio: float | None, fear_greed: dict | 
 
         for name, ticker in tickers.items():
             try:
-                hist = yf.Ticker(ticker).history(period="1y")
+                hist = yf.Ticker(ticker, session=_yf_session).history(period="1y")
                 if hist.empty:
                     raise ValueError("No history returned")
 
@@ -516,8 +532,8 @@ def fetch() -> dict:
     # Gold/Silver ratio (pre-fetch for key indicators)
     gs_ratio = None
     try:
-        gold_hist   = yf.Ticker("GC=F").history(period="2d")
-        silver_hist = yf.Ticker("SI=F").history(period="2d")
+        gold_hist   = yf.Ticker("GC=F", session=_yf_session).history(period="2d")
+        silver_hist = yf.Ticker("SI=F", session=_yf_session).history(period="2d")
         if not gold_hist.empty and not silver_hist.empty:
             gold_price   = float(gold_hist["Close"].iloc[-1])
             silver_price = float(silver_hist["Close"].iloc[-1])

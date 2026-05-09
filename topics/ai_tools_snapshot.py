@@ -2,16 +2,16 @@ from datetime import datetime
 from llm.provider import get_llm
 
 PEDRO_TOOLS = {
-    "Coding / Agents":       "Claude Code (Anthropic)",
+    "Coding / Agents":       "Claude Code + GPT Codex",
     "Excel / Spreadsheets":  "Claude.ai",
     "Presentations":         "Claude.ai",
     "Documents / Word":      "Claude.ai",
     "LaTeX / Overleaf":      "Overleaf + Claude.ai",
-    "Knowledge Management":  "Notion",
-    "Image Generation":      "Midjourney / DALL-E",
+    "Knowledge Management":  "Claude.ai",
+    "Image Generation":      "GPT-4o image / Google Imagen 3",
     "Research / Web Search": "Perplexity",
-    "Transcription / Audio": "Whisper / Otter",
-    "Task Automation":       "Make / Zapier",
+    "Transcription / Audio": "None",
+    "Task Automation":       "Claude.ai",
 }
 
 PROMPT = """<role>
