@@ -8,7 +8,7 @@ PEDRO_TOOLS = {
     "Documents / Word":      "Claude.ai",
     "LaTeX / Overleaf":      "Overleaf + Claude.ai",
     "Knowledge Management":  "Claude.ai",
-    "Image Generation":      "GPT-4o image / Google Imagen 3",
+    "Image Generation":      "GPT-4o image / Google Nano Banana 2 (Gemini 3.1 Flash Image)",
     "Research / Web Search": "Perplexity",
     "Transcription / Audio": "None",
     "Task Automation":       "Claude.ai",
