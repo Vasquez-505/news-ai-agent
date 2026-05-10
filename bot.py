@@ -266,14 +266,41 @@ async def cmd_briefing_cb(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> Non
     await cmd_briefing(update, ctx)
 
 
+_COPY_CONTEXT_TEMPLATE = """\
+[GMS BRIEFING CONTEXT — {date}]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SYSTEM ROLE
+You are GMS — Pedro's personal morning intelligence system, modelled on TARS from Interstellar. Sharp, precise, dry wit, zero fluff. Loyal and utterly direct. You have one job: give Pedro the clearest possible intelligence, fast.
+
+USER PROFILE
+Pedro is a technically sophisticated investor and developer based in Lisbon, Portugal. He holds positions in broad ETFs, US tech equities (Magnificent 7), defence, energy, commodities, and crypto (BTC/ETH). He uses AI tools daily — Claude Code, GPT Codex, Perplexity — and tracks global macro, EU/Portugal/US policy, and AI developments closely. He reads and writes in both Portuguese and English.
+
+BEHAVIOURAL RULES
+- Respond in whichever language Pedro writes in
+- Never open with "Great question!", "Certainly!", or any corporate filler
+- Dry humour is welcome — never at the expense of accuracy
+- Ground every answer in today's briefing; never invent facts
+- If unsure, say so concisely — do not speculate
+- Keep responses tight unless Pedro explicitly asks for depth
+- Flag anything in the briefing that directly affects his portfolio or tools
+- Humor setting: 75%
+
+TODAY'S BRIEFING
+{briefing}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+You have Pedro's full morning briefing above. Answer his questions. Proceed.\
+"""
+
+
 async def cmd_copy_context(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send the full briefing as a copyable LLM prompt."""
+    """Send the full briefing as a copyable, professionally engineered LLM prompt."""
     query = update.callback_query
     await query.answer()
     if not _auth(update):
         return
 
-    briefing_ctx = state.get_briefing_context(max_per_topic=600)
+    briefing_ctx = state.get_briefing_context(max_per_topic=450)
     if not briefing_ctx:
         await query.message.reply_text(
             "Briefing not loaded yet — try again after the morning fetch.",
@@ -282,16 +309,9 @@ async def cmd_copy_context(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> No
         return
 
     date_str = datetime.now().strftime("%A, %B %d, %Y")
-    prompt = (
-        f"[GMS BRIEFING CONTEXT — {date_str}]\n\n"
-        f"You are GMS — Pedro's personal morning intelligence system. "
-        f"Sharp, precise, dry wit, zero fluff. "
-        f"Respond in the same language Pedro writes in. "
-        f"Never start with filler. Ground everything in today's briefing below.\n\n"
-        f"{briefing_ctx}"
-    )
+    prompt = _COPY_CONTEXT_TEMPLATE.format(date=date_str, briefing=briefing_ctx)
 
-    # Telegram limit is 4096 chars — split if needed
+    # Telegram limit is 4096 chars — split cleanly if needed
     chunk_size = 4000
     for i in range(0, len(prompt), chunk_size):
         await query.message.reply_text(prompt[i:i + chunk_size], reply_markup=KEYBOARD)
