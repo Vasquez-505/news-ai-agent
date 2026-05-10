@@ -266,6 +266,37 @@ async def cmd_briefing_cb(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> Non
     await cmd_briefing(update, ctx)
 
 
+async def cmd_copy_context(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
+    """Send the full briefing as a copyable LLM prompt."""
+    query = update.callback_query
+    await query.answer()
+    if not _auth(update):
+        return
+
+    briefing_ctx = state.get_briefing_context(max_per_topic=600)
+    if not briefing_ctx:
+        await query.message.reply_text(
+            "Briefing not loaded yet — try again after the morning fetch.",
+            reply_markup=KEYBOARD,
+        )
+        return
+
+    date_str = datetime.now().strftime("%A, %B %d, %Y")
+    prompt = (
+        f"[GMS BRIEFING CONTEXT — {date_str}]\n\n"
+        f"You are GMS — Pedro's personal morning intelligence system. "
+        f"Sharp, precise, dry wit, zero fluff. "
+        f"Respond in the same language Pedro writes in. "
+        f"Never start with filler. Ground everything in today's briefing below.\n\n"
+        f"{briefing_ctx}"
+    )
+
+    # Telegram limit is 4096 chars — split if needed
+    chunk_size = 4000
+    for i in range(0, len(prompt), chunk_size):
+        await query.message.reply_text(prompt[i:i + chunk_size], reply_markup=KEYBOARD)
+
+
 async def cmd_tars_open(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle 'Talk to GMS' inline button — generate and send GMS opening message."""
     query = update.callback_query
@@ -429,8 +460,9 @@ def build_application() -> Application:
     app.add_handler(CommandHandler("briefing", cmd_briefing))
     app.add_handler(CommandHandler("status",   cmd_status))
     app.add_handler(CommandHandler("reload",   cmd_reload))
-    app.add_handler(CallbackQueryHandler(cmd_tars_open,   pattern="^talk_to_tars$"))
-    app.add_handler(CallbackQueryHandler(cmd_briefing_cb, pattern="^start_briefing$"))
+    app.add_handler(CallbackQueryHandler(cmd_tars_open,    pattern="^talk_to_tars$"))
+    app.add_handler(CallbackQueryHandler(cmd_briefing_cb,  pattern="^start_briefing$"))
+    app.add_handler(CallbackQueryHandler(cmd_copy_context, pattern="^copy_context$"))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     return app
 

@@ -41,8 +41,8 @@ def get_fetch_status() -> str:
     return f"{_fetch_status}\nLast fetch: {ts}"
 
 
-def get_briefing_context() -> str:
-    """Return a compact text summary of all topics for LLM conversation context."""
+def get_briefing_context(max_per_topic: int = 400) -> str:
+    """Return a text summary of all topics for LLM conversation context."""
     if not _topics:
         return ""
     parts = []
@@ -50,6 +50,5 @@ def get_briefing_context() -> str:
         title = data.get("title", topic_id)
         content = data.get("content", "")
         if content:
-            # Truncate each topic to 400 chars to stay within LLM context limits
-            parts.append(f"## {title}\n{content[:400]}")
+            parts.append(f"## {title}\n{content[:max_per_topic]}")
     return "\n\n".join(parts)

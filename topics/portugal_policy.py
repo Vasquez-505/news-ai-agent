@@ -40,6 +40,7 @@ Why it matters: [One sentence on the most significant change for Portuguese citi
 <quality_rules>
 - DO NOT just name a law — describe what it actually does (thresholds, percentages, deadlines, who is affected)
 - Be specific: "increases the minimum wage to €1,020/month" not "changes wages"
+- For every measure, explicitly state the PREVIOUS rule and the NEW rule: "Previously: X. Now: Y." Include exact figures.
 - If no significant laws were approved this week, say so briefly and note what is in progress to watch
 - Separate clearly what is already in force vs what is entering into force soon
 </quality_rules>"""

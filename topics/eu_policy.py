@@ -39,6 +39,7 @@ Why it matters: [One sentence on the most significant EU-level change this week]
 
 <quality_rules>
 - DO NOT just name a regulation — explain what it actually requires (e.g. "companies with >500 employees must..." not just "new corporate sustainability rules")
+- For every measure, explicitly state the PREVIOUS rule and the NEW rule: "Previously: X. Now: Y." Include exact figures, thresholds, and deadlines.
 - Always include: compliance deadline, who is affected, what specifically changes
 - Flag when something is particularly relevant to Portugal or Portuguese businesses
 - If no significant EU measures were formally adopted this week, say so and note what is close to adoption

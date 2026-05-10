@@ -39,6 +39,7 @@ Why it matters: [One sentence on the most significant US policy shift this week]
 <quality_rules>
 - Strictly factual and balanced — describe what the action does, not whether it is good or bad
 - Be specific: name the executive order number, the law title, the regulatory agency, the dollar amount
+- For every action, explicitly state what changed: "Previously: X. Now: Y." with exact figures, thresholds, and effective dates.
 - Distinguish between actions that are effective immediately vs those with future effective dates
 - If nothing was signed or enacted in the last 48 hours, check the last 7 days and note if the pipeline is quiet
 </quality_rules>"""
