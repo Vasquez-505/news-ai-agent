@@ -304,6 +304,34 @@ def _get_fear_greed() -> dict | None:
 
 # ── CRYPTO (BTC + ETH + Dominance) ────────────────────────────────────────────
 
+def _get_btc_dominance() -> float | None:
+    """Fetch BTC dominance % — pycoingecko first, direct requests as fallback."""
+    try:
+        cg = CoinGeckoAPI()
+        global_data = cg.get_global()
+        # pycoingecko 3.x returns full response {"data": {...}}
+        dom = global_data.get("data", {}).get("market_cap_percentage", {}).get("btc")
+        # Some API versions strip the outer "data" wrapper
+        if dom is None:
+            dom = global_data.get("market_cap_percentage", {}).get("btc")
+        if dom is not None:
+            return round(float(dom), 1)
+    except Exception:
+        pass
+    try:
+        resp = requests.get(
+            "https://api.coingecko.com/api/v3/global",
+            timeout=8,
+            headers={"User-Agent": "Mozilla/5.0"},
+        )
+        dom = resp.json().get("data", {}).get("market_cap_percentage", {}).get("btc")
+        if dom is not None:
+            return round(float(dom), 1)
+    except Exception:
+        pass
+    return None
+
+
 def _get_crypto_rows(fear_greed: dict | None, days_since_halving: int) -> list:
     rows = []
     try:
@@ -313,8 +341,7 @@ def _get_crypto_rows(fear_greed: dict | None, days_since_halving: int) -> list:
             vs_currencies="usd",
             include_24hr_change=True,
         )
-        global_data = cg.get_global()
-        dominance = global_data.get("data", {}).get("market_cap_percentage", {}).get("btc")
+        dominance = _get_btc_dominance()
 
         btc_price = prices.get("bitcoin", {}).get("usd")
         btc_chg   = prices.get("bitcoin", {}).get("usd_24h_change")
