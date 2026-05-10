@@ -8,34 +8,38 @@ A fully automated personal intelligence system that fetches, analyses, and deliv
 
 ## What It Does
 
-Every morning at 5:00 AM, before you wake up, the system:
+Every morning at 5:00 AM Lisbon time, before you wake up, the system:
 
-1. **Fetches and analyses** 7 topics using Gemini 2.0 Flash with live Google Search grounding
+1. **Fetches and analyses** 7 topics using Gemini 2.5 Flash with native Google Search grounding
 2. **Renders a newspaper dashboard** deployed to GitHub Pages — readable anywhere, any time
-3. **Pushes a Telegram notification** with the dashboard link and two action buttons
-4. **Generates a voice briefing** (~90 seconds) ready to play on demand
-
-When you tap **Talk to GMS**, your personal AI briefing agent — modelled on GMS from *Interstellar* — greets you with an intelligently weighted summary of the day and holds a free conversation about anything in the briefing.
+3. **Pushes a Telegram notification** with the dashboard link and a one-tap context button
+4. **Generates a voice briefing** (~90 seconds) ready to play on demand via `/briefing`
 
 ---
 
 ## Morning Flow
 
 ```
-5:00 AM  ─── Pipeline runs automatically (Render + GitHub Actions)
-             ├── 7 topics fetched with live web search
-             ├── HTML newspaper deployed to GitHub Pages
-             └── Voice script generated
+01:00 UTC ── GitHub Actions runs pipeline
+             ├── 7 topics fetched with live Google Search grounding
+             ├── HTML newspaper rendered and deployed to GitHub Pages
+             └── briefing_data.json saved alongside HTML
 
-You wake up ─── Telegram push waiting:
-                 "📰 Your briefing for Thursday, May 08 is ready."
-                 [link to newspaper]
-                 [🤖 Talk to GMS]  [📰 Start Briefing]
+05:00 Lisbon ── Render bot wakes up
+                ├── Downloads briefing_data.json from GitHub Pages
+                └── Pushes Telegram notification:
 
-Option A ─── Tap the link → read the full newspaper in your browser
-Option B ─── Tap Start Briefing → 90-second voice note plays
-Option C ─── Tap Talk to GMS → GMS greets you with today's summary
-                                  → free back-and-forth conversation
+                    "📰 Your briefing for Monday, May 11 is ready."
+                    https://vasquez-505.github.io/news-ai-agent/
+                    [📋 Copy briefing context]
+
+You wake up ── Options:
+  A) Tap the link         → read the full newspaper in your browser
+  B) Tap Copy context     → bot sends a ready-to-paste LLM prompt
+                            (GMS persona + Pedro profile + full briefing)
+                            long-press → copy → paste into any LLM
+  C) Type anything to bot → open conversation with GMS
+  D) /briefing            → 90-second voice note plays
 ```
 
 ---
@@ -45,12 +49,12 @@ Option C ─── Tap Talk to GMS → GMS greets you with today's summary
 | # | Topic | Coverage |
 |---|-------|----------|
 | 🌍 | **World News** | Top 3–5 global stories — what happened + why it matters |
-| 📈 | **Markets & Economy** | Live macro snapshot (S&P, Gold, BTC, EUR/USD, Fed rate) + sector alerts |
+| 📈 | **Markets & Economy** | Live macro snapshot (S&P, Gold, BTC, EUR/USD, VIX) + sector alerts |
 | ⚡ | **AI & Productivity** | Shipped AI products only — no announcements, no speculation |
-| 🇵🇹 | **Portugal Policy** | Enacted laws only — concrete provisions, practical impact |
-| 🇪🇺 | **EU Policy** | Formally adopted regulations — Portugal impact flagged |
-| 🇺🇸 | **US Policy** | Signed executive orders and legislation — balanced, factual |
-| 🛠️ | **AI Tools Snapshot** | Daily table comparing current tools vs best-in-class alternatives |
+| 🇵🇹 | **Portugal Policy** | Enacted laws — old rule vs new rule, exact thresholds, practical impact |
+| 🇪🇺 | **EU Policy** | Formally adopted regulations — compliance deadlines, Portugal impact flagged |
+| 🇺🇸 | **US Policy** | Signed executive orders and legislation — balanced, factual, before/after |
+| 🛠️ | **AI Tools Snapshot** | Daily table comparing Pedro's current tools vs best-in-class alternatives |
 
 ---
 
@@ -58,28 +62,33 @@ Option C ─── Tap Talk to GMS → GMS greets you with today's summary
 
 ```
 ┌─────────────────────────────────────────────────────────┐
+│             GITHUB ACTIONS (01:00 UTC daily)            │
+│  morning_fetch.yml                                      │
+│  ├── run_pipeline() → 7 topics via Gemini 2.5 Flash     │
+│  ├── Renders HTML newspaper                             │
+│  ├── Saves briefing_data.json                           │
+│  └── peaceiris/actions-gh-pages → deploys to gh-pages  │
+└────────────────────────┬────────────────────────────────┘
+                         │ briefing_data.json available
+                         ▼
+┌─────────────────────────────────────────────────────────┐
 │                    RENDER (always-on)                   │
 │  main.py                                                │
-│  ├── APScheduler → run_pipeline() at 05:00 Lisbon       │
-│  ├── Telegram bot (polling)                             │
+│  ├── APScheduler → 05:00 Lisbon                         │
+│  │   ├── Downloads briefing_data.json from GitHub Pages │
+│  │   └── Pushes Telegram notification                   │
+│  ├── Telegram bot (polling) — GMS conversation          │
 │  └── Health server → port 10000 (UptimeRobot ping)      │
 └─────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────┐
-│               GITHUB ACTIONS (scheduled)                │
-│  morning_fetch.yml → cron 0 5 * * *                     │
-│  ├── run_pipeline() → generates HTML                    │
-│  └── peaceiris/actions-gh-pages → deploys to gh-pages  │
-└─────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────┐
 │              GITHUB PAGES (static hosting)              │
-│  gh-pages branch → newspaper dashboard                  │
+│  gh-pages branch → newspaper + briefing_data.json       │
 │  https://vasquez-505.github.io/news-ai-agent/           │
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Two independent pipelines. Dashboard updates even if the bot is down.**
+**Single pipeline.** GitHub Actions generates the newspaper; Render loads it. No duplicate API calls, no divergence between what GMS knows and what the newspaper says.
 
 ---
 
@@ -87,7 +96,8 @@ Option C ─── Tap Talk to GMS → GMS greets you with today's summary
 
 | Component | Technology | Cost |
 |-----------|-----------|------|
-| LLM + Search | Gemma 4 31B IT (Google Search Grounding) | Free — via Google AI Studio |
+| LLM — Search & Grounding | Gemini 2.5 Flash (native Google Search) | Free — 20 RPD, 500 grounding calls/day |
+| LLM — Generate & Chat | Gemma 4 31B IT | Free — higher quota, no grounding needed |
 | Bot framework | python-telegram-bot 21.x | Free |
 | TTS | edge-tts (Microsoft Neural — en-US-GuyNeural) | Free |
 | Scheduling | APScheduler (on Render) + GitHub Actions | Free |
@@ -100,26 +110,53 @@ Option C ─── Tap Talk to GMS → GMS greets you with today's summary
 
 ---
 
+## LLM Architecture — Two-Model Split
+
+`generate_with_search()` — **Gemini 2.5 Flash** with `GoogleSearch` grounding tool. Searches Google's full index and synthesises content in one call. Used by all 7 topic fetchers. Falls back to Gemma on quota exhaustion.
+
+`generate()` / `chat()` — **Gemma 4 31B IT**. Higher daily quota, used for the GMS conversation, voice script generation, and any plain generation that doesn't need live search.
+
+```python
+# provider.py — simplified
+def generate_with_search(prompt):          # Gemini 2.5 Flash + GoogleSearch()
+def generate(prompt):                      # Gemma 4 31B IT
+def chat(history, message, system):        # Gemma 4 31B IT
+```
+
+---
+
 ## GMS — The Briefing Agent
 
-Personality modelled on GMS from *Interstellar*: precise, dry wit, zero fluff. Humor setting: 75%.
+Personality modelled on TARS from *Interstellar*: precise, dry wit, zero fluff. Humor setting: 75%.
 
-GMS holds the full briefing context from the moment you tap Talk to GMS. The conversation is completely open — ask about any story, go deeper on a topic, or ask something unrelated. Each session ends with a prompt to add items to your watchlist.
+The bot holds the full briefing context from the moment Render loads it at 5am. Any message you send triggers a GMS response grounded in today's briefing. The session ends with a watchlist prompt.
 
 ```
-GMS:  "Morning. Markets are mixed, geopolitics are not.
-        Here's what actually matters today:
+You:  [taps 📋 Copy briefing context]
+Bot:  [sends full GMS persona + Pedro profile + today's briefing]
+      → copy → paste into Claude.ai / ChatGPT → fully primed LLM
 
-        World: [weighted summary — 2-3 sentences if significant]
-        Markets: [macro signal + one sector alert]
-        AI: [what actually shipped]
-        ...
+You:  "Tell me more about the Fed decision."
+GMS:  [expands with context from today's briefing — no invention]
 
-        What do you want to dig into?"
-
-You:   "Tell me more about the Fed decision."
-GMS:  [expands with context from today's briefing]
+You:  "thanks"
+GMS:  "Anything specific you'd like me to keep an eye on over the
+       coming days? Reply with a topic, or 'no' to end."
 ```
+
+---
+
+## 📋 Copy Briefing Context
+
+The morning push includes a single **📋 Copy briefing context** button. Tapping it makes the bot send a professionally structured LLM prompt containing:
+
+- **System role** — GMS/TARS persona definition
+- **User profile** — Pedro's investor background, tools, location, language
+- **Behavioural rules** — response style, language switching, no filler, portfolio flagging
+- **Today's briefing** — all 7 topics
+- **Closing instruction** — "Answer his questions. Proceed."
+
+Long-press the message → Copy → paste into any frontier LLM for an instant briefed conversation.
 
 ---
 
@@ -128,13 +165,13 @@ GMS:  [expands with context from today's briefing]
 Track ongoing stories across sessions. GMS monitors them daily and surfaces updates automatically.
 
 ```
-You:   "Keep an eye on the SpaceX IPO"
+You:  "Keep an eye on the SpaceX IPO"
 GMS:  "Added. I'll flag updates each morning."
 
-You:   "What am I tracking?"
+You:  "What am I tracking?"
 GMS:  "Currently tracking: SpaceX IPO (added May 07)"
 
-You:   "Drop the SpaceX story"
+You:  "Drop the SpaceX story"
 GMS:  "Removed SpaceX IPO from your watchlist."
 ```
 
@@ -147,8 +184,8 @@ Stored in `data/watchlist.yaml`. Persists across sessions and pipeline runs.
 All 7 topic prompts use XML-structured format with explicit sections:
 
 ```xml
-<role>     — who the model is and what Pedro expects  </role>
-<task>     — what to fetch, date-aware               </task>
+<role>     — who the model is and what Pedro expects         </role>
+<task>     — what to research, date-aware                    </task>
 <selection_criteria>
            — INCLUDE / EXCLUDE rules, source preference
 </selection_criteria>
@@ -156,11 +193,17 @@ All 7 topic prompts use XML-structured format with explicit sections:
            — exact structure, bullet format, closing line
 </output_format>
 <quality_rules>
-           — what not to do, specificity requirements
+           — specificity requirements, before/after rule,
+             no preamble, no internal citations
 </quality_rules>
 ```
 
-Every bullet is required to answer both **what happened** and **why it matters**. Vague phrases ("experts say", "could potentially") are explicitly prohibited. Markets topic is hybrid: live numeric data from APIs + grounding for sector news, keeping financial accuracy separate from editorial content.
+**Key quality rules applied globally:**
+- Every bullet answers both *what happened* and *why it matters*
+- Policy sections must state *"Previously: X. Now: Y."* with exact figures
+- No opener lines ("Here is your morning briefing...") — `_OUTPUT_GUARD` appended to every prompt
+- No internal citations (`[cite: X]`) in output
+- Vague phrases ("experts say", "could potentially") explicitly prohibited
 
 ---
 
@@ -169,22 +212,22 @@ Every bullet is required to answer both **what happened** and **why it matters**
 ```
 News_AI_Agent/
 ├── main.py                     # Entry point — scheduler + bot + health server
-├── bot.py                      # Telegram bot — GMS conversation, watchlist, briefing
+├── bot.py                      # Telegram bot — GMS conversation, watchlist, copy context
 ├── pipeline.py                 # Pipeline — fetch all topics, render HTML, voice script
 ├── state.py                    # In-memory shared state (topics, voice script, status)
 ├── config.yaml                 # LLM, TTS, schedule, topics configuration
 │
 ├── topics/
 │   ├── world_news.py
-│   ├── markets_economy.py      # Hybrid: live APIs + grounding
+│   ├── markets_economy.py      # Hybrid: live APIs (yfinance, CoinGecko, FRED) + grounding
 │   ├── ai_productivity.py
 │   ├── portugal_policy.py
 │   ├── eu_policy.py
 │   ├── us_policy.py
-│   └── ai_tools_snapshot.py
+│   └── ai_tools_snapshot.py   # Pedro's tool comparison — PEDRO_TOOLS dict
 │
 ├── llm/
-│   └── provider.py             # Gemini provider — generate, generate_with_search, chat
+│   └── provider.py             # Two-model Gemini provider — search, generate, chat
 │
 ├── tts/
 │   └── voice.py                # edge-tts — converts voice script to MP3
@@ -192,16 +235,19 @@ News_AI_Agent/
 ├── dashboard/
 │   └── render.py               # Jinja2 → newspaper HTML
 │
+├── search/
+│   └── searcher.py             # RSS helper (Tavily removed — native grounding used)
+│
 ├── utils/
 │   └── greetings.py            # Greeting pool (15 entries + day-aware variants)
 │
 ├── data/
 │   └── watchlist.yaml          # Persistent watchlist
 │
-├── output/                     # Generated HTML (deployed to gh-pages)
+├── output/                     # Generated HTML + briefing_data.json (deployed to gh-pages)
 │
 └── .github/workflows/
-    └── morning_fetch.yml       # GitHub Actions — daily 05:00 UTC pipeline
+    └── morning_fetch.yml       # GitHub Actions — 01:00 UTC daily pipeline
 ```
 
 ---
@@ -216,7 +262,7 @@ schedule:
 
 llm:
   provider: "gemini"
-  model: "gemini-2.0-flash"
+  model: "gemma-4-31b-it"       # generate() and chat() only
 
 tts:
   provider: "edge-tts"
@@ -249,14 +295,6 @@ topics:
 
 ---
 
-## Planned Features
-
-See [PLANNED_FEATURES.md](PLANNED_FEATURES.md) for the full roadmap.
-
-**Next:** `GMS_newt` — a one-click desktop workflow (Playwright) that opens a voice conversation with a top-tier LLM pre-loaded with today's full briefing context. No pasting, no setup — one double-click, start talking.
-
----
-
 ## Deployment
 
 **Render:** Connect repo → set env vars → deploy. Auto-deploys on every push to `main`.
@@ -266,6 +304,12 @@ See [PLANNED_FEATURES.md](PLANNED_FEATURES.md) for the full roadmap.
 **GitHub Actions secrets:** Add `GEMINI_API_KEY` and `FRED_API_KEY` under repo Settings → Secrets → Actions.
 
 **UptimeRobot:** Create HTTP monitor → your Render URL → every 5 minutes. Keeps the free tier warm 24/7.
+
+---
+
+## Planned Features
+
+- **GMS Voice Mode** — one-click desktop workflow that opens a live voice conversation with a frontier LLM pre-loaded with today's full briefing context. No pasting, no setup — one double-click, start talking.
 
 ---
 
