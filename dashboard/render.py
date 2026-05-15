@@ -162,9 +162,16 @@ def _signal_badge_from_name(signal_str: str, indicator: str = "") -> str:
 
 def _build_macro_sections_html(sections_data: list, extras: dict) -> str:
     """
-    Build HTML <tr> rows for the new 7-column macro table.
-    Columns: Asset | Price | 24h Chg | RSI (14d) | vs 200d MA | Key Indicator | Signal
+    Build HTML <tr> rows for the macro table.
+    Columns: Asset | Price | 24h % | 1W % | 1M % | RSI (14d) | vs 200d MA
     """
+    def _pct_cell(val: float | None) -> str:
+        if val is None:
+            return '<span class="chg-neutral">—</span>'
+        s = f"{val:+.2f}%"
+        cls = "chg-positive" if val > 0 else ("chg-negative" if val < 0 else "chg-neutral")
+        return f'<span class="{cls}">{s}</span>'
+
     rows = []
 
     for section in sections_data:
@@ -173,32 +180,20 @@ def _build_macro_sections_html(sections_data: list, extras: dict) -> str:
             f'<tr class="macro-section-header"><td colspan="7">{label}</td></tr>'
         )
         for r in section.get("rows", []):
-            name = r.get("name", "—")
-            price = r.get("price", "—")
-            change_pct = r.get("change_pct")
-            rsi = r.get("rsi")
-            ma200_pct = r.get("ma200_pct")
-            key_indicator = r.get("key_indicator", "—")
-            signal_str = r.get("signal", "neutral")
-
-            # 24h change cell
-            if change_pct is not None:
-                chg_val = f"{change_pct:+.2f}%"
-                if change_pct > 0:
-                    chg_html = f'<span class="chg-positive">{chg_val}</span>'
-                elif change_pct < 0:
-                    chg_html = f'<span class="chg-negative">{chg_val}</span>'
-                else:
-                    chg_html = f'<span class="chg-neutral">{chg_val}</span>'
-            else:
-                chg_html = '<span class="chg-neutral">—</span>'
+            name         = r.get("name", "—")
+            price        = r.get("price", "—")
+            change_pct   = r.get("change_pct")
+            week_return  = r.get("week_return")
+            month_return = r.get("month_return")
+            rsi          = r.get("rsi")
+            ma200_pct    = r.get("ma200_pct")
 
             # RSI cell
             if rsi is not None:
                 if rsi > 70:
-                    rsi_html = f'<span class="rsi-overbought">{rsi:.1f} OVERBOUGHT</span>'
+                    rsi_html = f'<span class="rsi-overbought">{rsi:.1f}</span>'
                 elif rsi < 30:
-                    rsi_html = f'<span class="rsi-oversold">{rsi:.1f} OVERSOLD</span>'
+                    rsi_html = f'<span class="rsi-oversold">{rsi:.1f}</span>'
                 else:
                     rsi_html = f"{rsi:.1f}"
             else:
@@ -208,26 +203,20 @@ def _build_macro_sections_html(sections_data: list, extras: dict) -> str:
             if ma200_pct is not None:
                 sign = "+" if ma200_pct >= 0 else ""
                 ma_val = f"{sign}{ma200_pct:.1f}%"
-                if ma200_pct > 0:
-                    ma_html = f'<span class="chg-positive">{ma_val}</span>'
-                elif ma200_pct < 0:
-                    ma_html = f'<span class="chg-negative">{ma_val}</span>'
-                else:
-                    ma_html = ma_val
+                cls = "chg-positive" if ma200_pct > 0 else ("chg-negative" if ma200_pct < 0 else "")
+                ma_html = f'<span class="{cls}">{ma_val}</span>' if cls else ma_val
             else:
                 ma_html = "—"
-
-            badge = _signal_badge_from_name(signal_str, name)
 
             rows.append(
                 f"<tr>"
                 f'<td class="indicator-name">{name}</td>'
                 f'<td style="font-family:var(--font-mono);">{price}</td>'
-                f"<td>{chg_html}</td>"
+                f"<td>{_pct_cell(change_pct)}</td>"
+                f"<td>{_pct_cell(week_return)}</td>"
+                f"<td>{_pct_cell(month_return)}</td>"
                 f"<td>{rsi_html}</td>"
                 f"<td>{ma_html}</td>"
-                f'<td class="key-ind-cell">{key_indicator}</td>'
-                f"<td>{badge}</td>"
                 f"</tr>"
             )
 
@@ -284,12 +273,12 @@ def _build_extras_bar_html(extras: dict) -> str:
             f'</div>'
         )
 
-    dsh = extras.get("days_since_halving")
-    if dsh is not None:
+    duh = extras.get("days_until_halving")
+    if duh is not None:
         chips.append(
             f'<div class="extras-chip">'
-            f'<span class="extras-chip-label">Days Since BTC Halving</span>'
-            f'<span class="extras-chip-value">{dsh}</span>'
+            f'<span class="extras-chip-label">Days Until Next Halving</span>'
+            f'<span class="extras-chip-value">{duh:,}</span>'
             f'</div>'
         )
 
