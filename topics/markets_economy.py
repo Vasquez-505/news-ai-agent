@@ -501,34 +501,36 @@ Today is {date}. Using the live macro data below and the news search results alr
 </live_macro_data>
 
 <output_structure>
-Write a SECTOR ALERTS section only (the macro snapshot table is rendered separately):
+Write a SECTOR ALERTS section only (the macro snapshot table is rendered separately and already shows every price, % change, RSI, and signal):
 
 SECTOR ALERTS
-Based on the search results and live data above, identify material developments across these sectors:
+The table above already tells Pedro what moved. Your job is to tell him WHY — the news event, earnings result, geopolitical trigger, or regulatory action behind the move. Only write an alert when there is a specific news story driving a sector. Do not restate prices or % changes unless they are directly tied to explaining the news.
+
+Sectors to monitor:
 - Equities & Indices (S&P 500, Nasdaq, Magnificent 7: Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta, Tesla)
-- Gold & Silver (price drivers, central bank buying, real yield moves)
-- Aerospace & Defense (ITA ETF — NATO spending, contracts, earnings)
+- Gold & Silver (central bank buying, real yield shifts, safe-haven flows)
+- Aerospace & Defense (ITA ETF — NATO spending commitments, contracts, earnings)
 - FinTech & Digital Payments (FINX ETF — earnings, regulation, M&A)
-- Quantum Computing (QTUM ETF — breakthroughs, funding, partnerships)
-- Clean Energy & Nuclear (uranium supply, IRA policy, datacenter power)
-- Oil & Gas (WTI level, OPEC decisions, LNG exports)
-- Crypto (BTC/ETH price action, on-chain data, regulation, dominance)
+- Quantum Computing (QTUM ETF — breakthroughs, funding rounds, partnerships)
+- Clean Energy & Nuclear (uranium supply, IRA policy, datacenter power demand)
+- Oil & Gas (OPEC decisions, supply disruptions, LNG export policy)
+- Crypto (on-chain data, regulation, exchange news, ETF flows)
 
-Only include sectors where something MATERIALLY relevant happened today.
-For each sector alert:
-• **[Sector — Company/Asset]:** [What happened — 1 sentence]. [Why it matters — 1 sentence]. [Source]
+For each alert:
+• **[Sector — Company/Asset]:** [The news event — what happened, who was involved, specific figures — 1–2 sentences]. [Why it matters for Pedro's portfolio or macro positioning — 1 sentence]. [Source]
 
-After all sector alerts, write:
+After all alerts, write:
 Why it matters: [One sentence — the single most actionable signal from today's markets]
 </output_structure>
 
 <quality_rules>
-- Use the exact live numbers from the macro data above — do not estimate or round
-- Only include a sector if there is a genuine material development (earnings beat/miss, major contract, significant price move >3%, regulatory action)
-- Do not invent news — if a sector is quiet today, omit it
+- The table already shows prices and % moves — do NOT open an alert with "X rose Y%" unless you are explaining the news cause of that move
+- Only include a sector if there is a genuine news event: earnings beat/miss, contract award, regulatory ruling, geopolitical incident, major data release, analyst upgrade/downgrade with price target
+- A price move alone — no matter how large — is not an alert. The alert is the story behind the move
+- Do not invent news — if a sector is quiet today, omit it entirely
 - If live price data shows errors or dashes, skip that sector silently — do not explain the errors
 - Output only the final briefing text — no internal reasoning, no self-correction, no meta-commentary
-- Be specific: price levels, percentage moves, contract values, source names
+- Be specific: company names, contract values, earnings figures vs estimates, regulator names, source names
 </quality_rules>"""
 
 

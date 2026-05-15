@@ -29,7 +29,7 @@ SOURCE PREFERENCE: Official lab blogs (anthropic.com, openai.com, deepmind.googl
 <output_format>
 Write 3–5 bullet points. Exactly this structure for each:
 
-• **[Lab or Product Name]:** [What shipped — 1 sentence describing the specific capability or release]. [Practical impact — 1 sentence on what this actually changes for someone using AI tools today]. [Source Name]
+• **[Lab or Product Name]:** [What shipped — exact model name/version, key capabilities, context window, pricing, and how it compares to the previous version or closest competitor — 2 sentences]. [Practical impact — what a developer or knowledge worker can concretely do now that they could not before, with a specific example — 1 sentence]. [Source Name]
 
 After all bullets, write exactly one line:
 Why it matters: [One sentence on the most significant shift in the AI landscape today]
@@ -37,8 +37,9 @@ Why it matters: [One sentence on the most significant shift in the AI landscape 
 
 <quality_rules>
 - SHIPPED beats ANNOUNCED — if it is not publicly available, it does not belong here
-- Be specific: name the model version, the capability, the benchmark improvement, the price
-- Practical impact must be concrete ("saves 2 hours of manual work") not vague ("improves productivity")
+- Mandatory specifics: exact model name and version (e.g. "GPT-4.5-turbo", "Claude 3.7 Sonnet"), benchmark scores (MMLU, HumanEval, etc.), context window size, API price per million tokens, speed in tokens/sec
+- "What shipped" is 2 sentences minimum — one for what it is, one for how it differs from what existed before
+- Practical impact must be a concrete workflow change ("replaces a 3-step process with one prompt") not vague ("improves productivity")
 - If nothing significant shipped in the last 48 hours, say so briefly and note what to watch for
 - Maximum 5 bullets — quality over quantity
 </quality_rules>"""

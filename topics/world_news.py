@@ -30,18 +30,19 @@ SOURCE PREFERENCE: Reuters, AP, BBC, Al Jazeera, Deutsche Welle, Financial Times
 <output_format>
 Write 3–5 bullet points. Exactly this structure for each:
 
-• **[Subject/Country/Actor]:** [What happened — 1 clear sentence]. [What this means or implies — 1 sentence]. [Source Name]
+• **[Subject/Country/Actor]:** [What specifically happened — name the leaders, countries, exact figures, dates, and sequence of events in 2 sentences]. [Immediate consequence or reaction — what happened next, who responded, what changed on the ground — 1 sentence]. [Why this matters globally — strategic, economic, or humanitarian implication — 1 sentence]. [Source Name]
 
 After all bullets, write exactly one line:
 Why it matters: [One sentence on the most significant collective implication of today's top stories]
 </output_format>
 
 <quality_rules>
-- Every bullet must answer BOTH: what happened AND why it matters
-- Be specific: name the actors, the numbers, the timeline
+- The "what happened" block must be detailed enough that Pedro does not need to click the source to understand the story
+- Mandatory specifics: full names of leaders and countries, exact vote counts or casualty figures, treaty or legislation names, dollar amounts, kilometre/mile distances, specific cities or regions
+- "What happened" is 2 sentences minimum — one for the event, one for the detail or context that makes it significant
 - If fewer than 3 genuinely significant stories exist today, write fewer — do not pad with minor news
-- No bullet points that only describe the headline without explanation
-- No vague phrases like "experts say" or "could potentially"
+- No vague phrases like "experts say", "could potentially", "sources indicate", or "amid tensions"
+- Never describe a story as "ongoing" without stating what specifically changed in the last 24 hours
 </quality_rules>"""
 
 
