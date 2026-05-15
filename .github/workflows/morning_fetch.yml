@@ -64,15 +64,21 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
         run: |
           python3 - <<'EOF'
           import os, json, urllib.request
           from datetime import datetime
 
-          token        = os.environ["TELEGRAM_BOT_TOKEN"]
-          chat_id      = os.environ["TELEGRAM_CHAT_ID"]
-          dashboard_url = os.environ.get("DASHBOARD_URL", "")
+          token   = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat_id = os.environ["TELEGRAM_CHAT_ID"]
+
+          # Derive GitHub Pages URL from the repo name — always available in Actions
+          repo = os.environ.get("GITHUB_REPOSITORY", "")
+          if "/" in repo:
+              owner, repo_name = repo.split("/", 1)
+              dashboard_url = f"https://{owner.lower()}.github.io/{repo_name}/"
+          else:
+              dashboard_url = ""
 
           date_str = datetime.now().strftime("%A, %B %d, %Y")
           text = f"📰 Your briefing for {date_str} is ready.\n\n{dashboard_url}" if dashboard_url else f"📰 Your briefing for {date_str} is ready."
