@@ -6,7 +6,6 @@ Designed to run as a single long-lived process on Render.
 import asyncio
 import logging
 import os
-from datetime import datetime
 
 import yaml
 from aiohttp import web
@@ -79,19 +78,18 @@ async def _load_briefing_from_pages(dashboard_url: str) -> bool:
         return False
 
 
-async def _scheduled_fetch(bot, chat_id: int, dashboard_url: str, watchlist: list = None):
-    """Called by APScheduler at the configured fetch time."""
-    logger.info("Scheduled fetch triggered at %s", datetime.now().strftime("%H:%M"))
+async def _load_daily_briefing(dashboard_url: str, watchlist: list = None):
+    """
+    Load today's briefing into state so the GMS bot can answer questions.
+    Called at startup and daily at the configured fetch time.
+    The Telegram morning push is handled by GitHub Actions — not here.
+    """
+    logger.info("Loading daily briefing at %s", datetime.now().strftime("%H:%M"))
 
-    # Primary: load the newspaper data already deployed to GitHub Pages by the
-    # 4am GitHub Actions run — no duplicate API calls, GMS knows exactly what
-    # is in the newspaper.
     loaded = False
     if dashboard_url:
         loaded = await _load_briefing_from_pages(dashboard_url)
 
-    # Fallback: if GitHub Pages load fails (Actions delayed, network issue, etc.)
-    # run the pipeline locally so the morning push is never skipped.
     if not loaded:
         logger.warning("GitHub Pages load failed — running pipeline locally as fallback")
         try:
@@ -99,25 +97,6 @@ async def _scheduled_fetch(bot, chat_id: int, dashboard_url: str, watchlist: lis
             logger.info("Fallback pipeline complete")
         except Exception as e:
             logger.error("Fallback pipeline failed: %s", e)
-
-    # Push morning newspaper link to Telegram regardless of pipeline errors
-    date_str = datetime.now().strftime("%A, %B %d, %Y")
-    if dashboard_url:
-        text = (
-            f"📰 Your briefing for {date_str} is ready.\n\n"
-            f"{dashboard_url}"
-        )
-    else:
-        text = f"📰 Your briefing for {date_str} is ready."
-    try:
-        from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-        inline_kb = InlineKeyboardMarkup([[
-            InlineKeyboardButton("📋 Copy briefing context", callback_data="copy_context"),
-        ]])
-        await bot.send_message(chat_id=chat_id, text=text, reply_markup=inline_kb)
-        logger.info("Morning push sent to chat %d", chat_id)
-    except Exception as e:
-        logger.error("Failed to send morning push: %s", e)
 
 
 async def main():
@@ -131,17 +110,16 @@ async def main():
 
     watchlist = config.get("watchlist", [])
     dashboard_url = os.getenv("DASHBOARD_URL", "")
-    chat_id = int(os.getenv("TELEGRAM_CHAT_ID", "0"))
 
     # --- Telegram bot (non-blocking) ---
     app = build_application()
 
-    # --- Scheduler ---
+    # --- Scheduler: daily briefing refresh so GMS bot stays current ---
     scheduler = AsyncIOScheduler(timezone=timezone)
     scheduler.add_job(
-        _scheduled_fetch,
+        _load_daily_briefing,
         CronTrigger(hour=hour, minute=minute, timezone=timezone),
-        args=[app.bot, chat_id, dashboard_url, watchlist or []],
+        args=[dashboard_url, watchlist or []],
         id="morning_fetch",
         replace_existing=True,
     )
@@ -151,6 +129,10 @@ async def main():
     await app.start()
     await app.updater.start_polling(allowed_updates=["message", "callback_query"])
     logger.info("Telegram bot started")
+
+    # Load today's briefing immediately so GMS works from the moment Render starts,
+    # not just after the 5am scheduler fires.
+    asyncio.create_task(_load_daily_briefing(dashboard_url, watchlist or []))
 
     # --- Health-check HTTP server (required by Render, used by UptimeRobot) ---
     async def health(request):

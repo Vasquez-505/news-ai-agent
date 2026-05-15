@@ -59,3 +59,40 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./output
           keep_files: false
+
+      - name: Send Telegram morning push
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, urllib.request
+          from datetime import datetime
+
+          token        = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat_id      = os.environ["TELEGRAM_CHAT_ID"]
+          dashboard_url = os.environ.get("DASHBOARD_URL", "")
+
+          date_str = datetime.now().strftime("%A, %B %d, %Y")
+          text = f"📰 Your briefing for {date_str} is ready.\n\n{dashboard_url}" if dashboard_url else f"📰 Your briefing for {date_str} is ready."
+
+          payload = json.dumps({
+              "chat_id": chat_id,
+              "text": text,
+              "reply_markup": {
+                  "inline_keyboard": [[
+                      {"text": "📋 Copy briefing context", "callback_data": "copy_context"}
+                  ]]
+              }
+          }).encode()
+
+          req = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=payload,
+              headers={"Content-Type": "application/json"},
+          )
+          with urllib.request.urlopen(req) as resp:
+              result = json.loads(resp.read().decode())
+              print(f"Telegram push sent: message_id={result['result']['message_id']}")
+          EOF
