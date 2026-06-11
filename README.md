@@ -1,23 +1,23 @@
-# Good Morning Sunshine — Daily Intelligence Briefing Agent
+# Good Morning Sunshine: Daily Intelligence Briefing Agent
 
 > *"The world generates a lot of noise. This is the signal."*
 
-A fully automated personal intelligence system that fetches, analyses, and delivers a daily morning briefing across 7 curated topics — deployed on a zero-cost stack, delivered via Telegram, and readable as a newspaper-style HTML dashboard.
+A fully automated personal intelligence system that fetches, analyses, and delivers a daily morning briefing across 7 curated topics, deployed on a zero-cost stack, delivered via Telegram, and readable as a newspaper-style HTML dashboard.
 
 ---
 
-## What It Does
+## What it does
 
 Every morning at 5:00 AM Lisbon time, before you wake up, the system:
 
-1. **Fetches and analyses** 7 topics using Gemini 2.5 Flash with native Google Search grounding
-2. **Renders a newspaper dashboard** deployed to GitHub Pages — readable anywhere, any time
-3. **Pushes a Telegram notification** with the dashboard link and a one-tap context button
-4. **Generates a voice briefing** (~90 seconds) ready to play on demand via `/briefing`
+1. Fetches and analyses 7 topics using Gemini 2.5 Flash with native Google Search grounding
+2. Renders a newspaper dashboard deployed to GitHub Pages, readable anywhere
+3. Pushes a Telegram notification with the dashboard link and a one-tap context button
+4. Generates a voice briefing (~90 seconds) ready to play on demand via `/briefing`
 
 ---
 
-## Morning Flow
+## Morning flow
 
 ```
 01:00 UTC ── GitHub Actions runs pipeline
@@ -44,17 +44,17 @@ You wake up ── Options:
 
 ---
 
-## The 7 Topics
+## The 7 topics
 
 | # | Topic | Coverage |
 |---|-------|----------|
-| 🌍 | **World News** | Top 3–5 global stories — what happened + why it matters |
-| 📈 | **Markets & Economy** | Live macro snapshot (S&P, Gold, BTC, EUR/USD, VIX) + sector alerts |
-| ⚡ | **AI & Productivity** | Shipped AI products only — no announcements, no speculation |
-| 🇵🇹 | **Portugal Policy** | Enacted laws — old rule vs new rule, exact thresholds, practical impact |
-| 🇪🇺 | **EU Policy** | Formally adopted regulations — compliance deadlines, Portugal impact flagged |
-| 🇺🇸 | **US Policy** | Signed executive orders and legislation — balanced, factual, before/after |
-| 🛠️ | **AI Tools Snapshot** | Daily table comparing Pedro's current tools vs best-in-class alternatives |
+| 1 | World News | Top 3-5 global stories, what happened and why it matters |
+| 2 | Markets & Economy | Live macro snapshot (S&P, Gold, BTC, EUR/USD, VIX) plus sector alerts |
+| 3 | AI & Productivity | Shipped AI products only, no announcements, no speculation |
+| 4 | Portugal Policy | Enacted laws, old rule vs new rule, exact thresholds, practical impact |
+| 5 | EU Policy | Formally adopted regulations, compliance deadlines, Portugal impact flagged |
+| 6 | US Policy | Signed executive orders and legislation, balanced, factual, before/after |
+| 7 | AI Tools Snapshot | Daily table comparing Pedro's current tools vs best-in-class alternatives |
 
 ---
 
@@ -92,14 +92,14 @@ You wake up ── Options:
 
 ---
 
-## Tech Stack
+## Tech stack
 
 | Component | Technology | Cost |
 |-----------|-----------|------|
-| LLM — Search & Grounding | Gemini 2.5 Flash (native Google Search) | Free — 20 RPD, 500 grounding calls/day |
-| LLM — Generate & Chat | Gemma 4 31B IT | Free — higher quota, no grounding needed |
+| LLM: Search & Grounding | Gemini 2.5 Flash (native Google Search) | Free (20 RPD, 500 grounding calls/day) |
+| LLM: Generate & Chat | Gemma 4 31B IT | Free (higher quota, no grounding needed) |
 | Bot framework | python-telegram-bot 21.x | Free |
-| TTS | edge-tts (Microsoft Neural — en-US-GuyNeural) | Free |
+| TTS | edge-tts (Microsoft Neural, en-US-GuyNeural) | Free |
 | Scheduling | APScheduler (on Render) + GitHub Actions | Free |
 | Bot hosting | Render free tier + UptimeRobot keepalive | Free |
 | Dashboard hosting | GitHub Pages (gh-pages branch) | Free |
@@ -110,11 +110,11 @@ You wake up ── Options:
 
 ---
 
-## LLM Architecture — Two-Model Split
+## LLM architecture: two-model split
 
-`generate_with_search()` — **Gemini 2.5 Flash** with `GoogleSearch` grounding tool. Searches Google's full index and synthesises content in one call. Used by all 7 topic fetchers. Falls back to Gemma on quota exhaustion.
+`generate_with_search()` uses **Gemini 2.5 Flash** with the `GoogleSearch` grounding tool. It searches Google's full index and synthesises content in one call, used by all 7 topic fetchers, falling back to Gemma on quota exhaustion.
 
-`generate()` / `chat()` — **Gemma 4 31B IT**. Higher daily quota, used for the GMS conversation, voice script generation, and any plain generation that doesn't need live search.
+`generate()` / `chat()` use **Gemma 4 31B IT**. Higher daily quota, used for the GMS conversation, voice script generation, and any plain generation that doesn't need live search.
 
 ```python
 # provider.py — simplified
@@ -125,7 +125,7 @@ def chat(history, message, system):        # Gemma 4 31B IT
 
 ---
 
-## GMS — The Briefing Agent
+## GMS: the briefing agent
 
 Personality modelled on TARS from *Interstellar*: precise, dry wit, zero fluff. Humor setting: 75%.
 
@@ -146,15 +146,15 @@ GMS:  "Anything specific you'd like me to keep an eye on over the
 
 ---
 
-## 📋 Copy Briefing Context
+## Copy briefing context
 
-The morning push includes a single **📋 Copy briefing context** button. Tapping it makes the bot send a professionally structured LLM prompt containing:
+The morning push includes a single **📋 Copy briefing context** button. Tapping it makes the bot send a structured LLM prompt containing:
 
-- **System role** — GMS/TARS persona definition
-- **User profile** — Pedro's investor background, tools, location, language
-- **Behavioural rules** — response style, language switching, no filler, portfolio flagging
-- **Today's briefing** — all 7 topics
-- **Closing instruction** — "Answer his questions. Proceed."
+- System role: GMS/TARS persona definition
+- User profile: Pedro's investor background, tools, location, language
+- Behavioural rules: response style, language switching, no filler, portfolio flagging
+- Today's briefing: all 7 topics
+- Closing instruction: "Answer his questions. Proceed."
 
 Long-press the message → Copy → paste into any frontier LLM for an instant briefed conversation.
 
@@ -179,7 +179,7 @@ Stored in `data/watchlist.yaml`. Persists across sessions and pipeline runs.
 
 ---
 
-## Prompt Engineering
+## Prompt engineering
 
 All 7 topic prompts use XML-structured format with explicit sections:
 
@@ -198,16 +198,16 @@ All 7 topic prompts use XML-structured format with explicit sections:
 </quality_rules>
 ```
 
-**Key quality rules applied globally:**
+Key quality rules applied globally:
 - Every bullet answers both *what happened* and *why it matters*
 - Policy sections must state *"Previously: X. Now: Y."* with exact figures
-- No opener lines ("Here is your morning briefing...") — `_OUTPUT_GUARD` appended to every prompt
+- No opener lines ("Here is your morning briefing..."), `_OUTPUT_GUARD` appended to every prompt
 - No internal citations (`[cite: X]`) in output
 - Vague phrases ("experts say", "could potentially") explicitly prohibited
 
 ---
 
-## File Structure
+## File structure
 
 ```
 News_AI_Agent/
@@ -283,33 +283,33 @@ topics:
 
 ---
 
-## Environment Variables
+## Environment variables
 
 | Variable | Description |
 |----------|-------------|
 | `TELEGRAM_BOT_TOKEN` | From BotFather |
 | `TELEGRAM_CHAT_ID` | Your Telegram user ID |
-| `GEMINI_API_KEY` | Google AI Studio — free |
-| `FRED_API_KEY` | FRED macroeconomic data — free |
+| `GEMINI_API_KEY` | Google AI Studio (free) |
+| `FRED_API_KEY` | FRED macroeconomic data (free) |
 | `DASHBOARD_URL` | GitHub Pages URL for the newspaper |
 
 ---
 
 ## Deployment
 
-**Render:** Connect repo → set env vars → deploy. Auto-deploys on every push to `main`.
+Connect repo on Render, set env vars, deploy. Auto-deploys on every push to `main`.
 
-**GitHub Pages:** Settings → Pages → Deploy from branch → `gh-pages` → `/`
+GitHub Pages: Settings → Pages → Deploy from branch → `gh-pages` → `/`
 
-**GitHub Actions secrets:** Add `GEMINI_API_KEY` and `FRED_API_KEY` under repo Settings → Secrets → Actions.
+GitHub Actions secrets: add `GEMINI_API_KEY` and `FRED_API_KEY` under repo Settings → Secrets → Actions.
 
-**UptimeRobot:** Create HTTP monitor → your Render URL → every 5 minutes. Keeps the free tier warm 24/7.
+UptimeRobot: create an HTTP monitor pointing at your Render URL, every 5 minutes. Keeps the free tier alive 24/7.
 
 ---
 
-## Planned Features
+## Planned features
 
-- **GMS Voice Mode** — one-click desktop workflow that opens a live voice conversation with a frontier LLM pre-loaded with today's full briefing context. No pasting, no setup — one double-click, start talking.
+- GMS Voice Mode: one-click desktop workflow that opens a live voice conversation with a frontier LLM pre-loaded with today's full briefing context. No pasting, no setup. One double-click, start talking.
 
 ---
 
