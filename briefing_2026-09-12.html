@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good Morning Sunshine — September 12, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ── RESET & BASE ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream:       #F7F3E8;
+    --cream-dark:  #EEE9D8;
+    --cream-mid:   #E8E2CC;
+    --ink:         #1A1A1A;
+    --ink-mid:     #3A3A3A;
+    --ink-light:   #6A6A6A;
+    --rule:        #2A2A2A;
+    --red:         #8B1A1A;
+    --red-light:   #A52020;
+    --green:       #2D6A2D;
+    --amber:       #A67C00;
+    --navy:        #1B3A6B;
+    --col-gap:     2.5rem;
+    --font-serif:  'Playfair Display', Georgia, serif;
+    --font-body:   'Source Serif 4', Georgia, serif;
+    --font-bask:   'Libre Baskerville', Georgia, serif;
+    --font-mono:   'IBM Plex Mono', 'Courier New', monospace;
+    --font-sans:   'Source Sans 3', Helvetica, sans-serif;
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── PAPER TEXTURE ────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+  }
+
+  /* ── LAYOUT ───────────────────────────────────────────── */
+  .newspaper {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  /* ── RULES ────────────────────────────────────────────── */
+  .rule-thick-thin {
+    border: none;
+    border-top: 3px solid var(--rule);
+    box-shadow: 0 3px 0 0 var(--rule), 0 5px 0 0 var(--cream), 0 6px 0 0 var(--rule);
+    height: 6px;
+    margin: 0;
+  }
+
+  .rule-single {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 0;
+  }
+
+  .rule-thin {
+    border: none;
+    border-top: 1px solid rgba(42,42,42,0.25);
+  }
+
+  /* ── MASTHEAD ─────────────────────────────────────────── */
+  .masthead {
+    text-align: center;
+    padding: 2.5rem 0 0;
+  }
+
+  .masthead-kicker {
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    margin-bottom: 0.75rem;
+  }
+
+  .masthead-title {
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .masthead-sub {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1.25rem;
+  }
+
+  .masthead-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 0.4rem;
+  }
+
+  .masthead-edition {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.15rem 0.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+  }
+
+  /* ── TOPIC GRID ───────────────────────────────────────── */
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-top: 0;
+    position: relative;
+  }
+
+  /* Column rules */
+  .topics-grid::before,
+  .topics-grid::after {
+    content: '';
+    position: absolute;
+    top: 1.5rem;
+    bottom: 1.5rem;
+    width: 1px;
+    background: rgba(42,42,42,0.2);
+  }
+  .topics-grid::before { left: 33.333%; }
+  .topics-grid::after  { left: 66.666%; }
+
+  .topic-section {
+    padding: 1.75rem var(--col-gap) 1.75rem;
+  }
+
+  .topics-grid .topic-section:nth-child(3n+1) { padding-left: 0; }
+  .topics-grid .topic-section:nth-child(3n+3) { padding-right: 0; }
+
+  /* Full-width sections */
+  .full-width {
+    grid-column: 1 / -1;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* ── SECTION HEADERS ──────────────────────────────────── */
+  .section-rule {
+    border: none;
+    border-top: 1px solid rgba(42,42,42,0.3);
+    margin-bottom: 0.6rem;
+  }
+
+  .section-header {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-header .emoji { font-size: 0.9rem; }
+
+  /* ── BODY TEXT ────────────────────────────────────────── */
+  .topic-body {
+    font-family: var(--font-body);
+    font-size: 0.925rem;
+    line-height: 1.72;
+    color: var(--ink);
+  }
+
+  .topic-body p {
+    margin-bottom: 0.85rem;
+  }
+
+  /* Drop cap */
+  .topic-body p:first-of-type::first-letter {
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 3.6rem;
+    line-height: 0.78;
+    float: left;
+    margin-right: 0.08em;
+    margin-top: 0.05em;
+    color: var(--red);
+  }
+
+  /* Bold lead + em dash style */
+  .topic-body strong {
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* ── PULL QUOTE (Why it matters) ──────────────────────── */
+  .pull-quote {
+    border-left: 3px solid var(--red);
+    margin: 1.2rem 0 0.5rem 0;
+    padding: 0.4rem 0 0.4rem 1rem;
+    font-family: var(--font-bask);
+    font-style: italic;
+    font-size: 0.875rem;
+    color: var(--ink-mid);
+    line-height: 1.6;
+  }
+
+  /* ── SOURCES ──────────────────────────────────────────── */
+  .sources-bar {
+    margin-top: 1rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(42,42,42,0.15);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
+  }
+
+  .sources-label {
+    font-family: var(--font-sans);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    width: 100%;
+    margin-bottom: 0.1rem;
+  }
+
+  .source-link {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    color: var(--navy);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+  }
+
+  .source-link:hover { color: var(--red); }
+
+  /* ── MARKETS: MACRO TABLE ─────────────────────────────── */
+  .macro-table-wrap {
+    background: var(--cream-dark);
+    border: 1px solid var(--cream-mid);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .macro-table-label {
+    font-family: var(--font-sans);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.85rem;
+  }
+
+  .macro-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+
+  .macro-table th {
+    font-family: var(--font-sans);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-align: left;
+    padding: 0 1rem 0.5rem 0;
+    border-bottom: 1px solid var(--cream-mid);
+  }
+
+  .macro-table td {
+    padding: 0.45rem 1rem 0.45rem 0;
+    border-bottom: 1px solid rgba(42,42,42,0.08);
+    vertical-align: middle;
+    color: var(--ink);
+  }
+
+  .macro-table tr:last-child td { border-bottom: none; }
+
+  .macro-table .indicator-name {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-mid);
+    font-weight: 600;
+  }
+
+  .macro-table .value {
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+
+  .signal-badge {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+  }
+
+  .signal-green  { background: rgba(45,106,45,0.12); color: var(--green); }
+  .signal-amber  { background: rgba(166,124,0,0.12); color: var(--amber); }
+  .signal-red    { background: rgba(139,26,26,0.12); color: var(--red);   }
+  .signal-neutral{ background: rgba(42,42,42,0.08);  color: var(--ink-light); }
+
+  /* ── MARKETS: SECTOR ALERTS ───────────────────────────── */
+  .sector-alerts-label {
+    font-family: var(--font-sans);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.85rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ── AI TOOLS TABLE ───────────────────────────────────── */
+  .tools-table-wrap {
+    overflow-x: auto;
+    margin-top: 0.5rem;
+  }
+
+  .tools-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+
+  .tools-table th {
+    font-family: var(--font-sans);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red);
+    text-align: left;
+    padding: 0.4rem 0.85rem 0.4rem 0;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+
+  .tools-table td {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    padding: 0.5rem 0.85rem 0.5rem 0;
+    border-bottom: 1px solid rgba(42,42,42,0.1);
+    vertical-align: top;
+    color: var(--ink);
+  }
+
+  .tools-table tr:last-child td { border-bottom: none; }
+
+  .tools-table .categoria {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--ink-mid);
+    white-space: nowrap;
+  }
+
+  .switch-optimal { color: var(--green); font-weight: 700; }
+  .switch-consider { color: var(--amber); font-weight: 700; }
+  .switch-upgrade { color: var(--red); font-weight: 700; }
+  .switch-notusing { color: var(--ink-light); }
+
+  /* ── WATCHLIST ────────────────────────────────────────── */
+  .watchlist-section {
+    background: var(--cream-dark);
+    border-top: 2px solid var(--ink);
+    padding: 1rem 1.5rem;
+    margin-top: 0;
+  }
+
+  .watchlist-label {
+    font-family: var(--font-sans);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .watchlist-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(139,26,26,0.3);
+  }
+
+  .watchlist-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+  }
+
+  .watchlist-item {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: var(--ink-mid);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .watchlist-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+  }
+
+  /* ── FOOTER ───────────────────────────────────────────── */
+  .footer {
+    margin-top: 2.5rem;
+    padding-top: 0.75rem;
+    text-align: center;
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  /* ── MACRO SECTION HEADERS ───────────────────────────── */
+  .macro-section-header td {
+    font-family: var(--font-sans);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    padding-top: 0.9rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--cream-mid);
+  }
+  .macro-section-header:first-child td { padding-top: 0.1rem; }
+
+  /* ── EXTRAS BAR ───────────────────────────────────────── */
+  .macro-extras-bar {
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--cream-mid);
+  }
+
+  .extras-bar-label {
+    font-family: var(--font-sans);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 0.55rem;
+  }
+
+  .extras-chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .extras-chip {
+    background: var(--cream);
+    border: 1px solid rgba(42,42,42,0.14);
+    border-radius: 2px;
+    padding: 0.35rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    min-width: 7rem;
+  }
+
+  .extras-chip-label {
+    font-family: var(--font-sans);
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-light);
+    font-weight: 600;
+  }
+
+  .extras-chip-value {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── CHANGE & RSI COLOURING ───────────────────────────── */
+  .chg-positive { color: var(--green); font-weight: 600; }
+  .chg-negative { color: var(--red);   font-weight: 600; }
+  .chg-neutral  { color: var(--ink-mid); }
+
+  .rsi-overbought { color: var(--red);   font-weight: 600; }
+  .rsi-oversold   { color: var(--green); font-weight: 600; }
+
+  /* ── KEY INDICATOR CELL ───────────────────────────────── */
+  .key-ind-cell {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    color: var(--ink-mid);
+    max-width: 280px;
+  }
+
+  /* ── RESPONSIVE ───────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .topics-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .topics-grid::after { display: none; }
+    .topics-grid::before { left: 50%; }
+    .topic-section:nth-child(odd) { padding-left: 0; }
+    .topic-section:nth-child(even) { padding-right: 0; }
+  }
+
+  @media (max-width: 600px) {
+    .newspaper { padding: 0 1rem 3rem; }
+    .topics-grid { grid-template-columns: 1fr; }
+    .topics-grid::before,
+    .topics-grid::after { display: none; }
+    .topic-section { padding-left: 0 !important; padding-right: 0 !important; }
+    .masthead-bottom { flex-direction: column; gap: 0.4rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="newspaper">
+
+  <!-- ═══ MASTHEAD ═══════════════════════════════════════════ -->
+  <header class="masthead">
+    <p class="masthead-kicker">Pedro's Daily Intelligence Briefing</p>
+    <hr class="rule-thick-thin">
+    <h1 class="masthead-title">Good Morning Sunshine</h1>
+    <p class="masthead-sub">The Daily Briefing &nbsp;·&nbsp; Lisbon &nbsp;·&nbsp; September 12, 2026</p>
+    <hr class="rule-single">
+    <div class="masthead-bottom">
+      <span>Seven Topics · Est. 2026</span>
+      <span class="masthead-edition">Morning Edition</span>
+      <span>Generated 05:40 · September 12, 2026</span>
+    </div>
+    <hr class="rule-thick-thin" style="margin-bottom:0;">
+  </header>
+
+  <!-- ═══ MARKETS (full-width, first for prominence) ═════════ -->
+  <section class="topic-section full-width" style="padding-top:1.75rem; padding-bottom:0;">
+    <hr class="section-rule">
+    <h2 class="section-header"><span class="emoji">📈</span> Markets &amp; Economy</h2>
+
+    <div class="macro-table-wrap">
+      <div class="macro-table-label">Macro Snapshot</div>
+      <table class="macro-table">
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Price</th>
+            <th>24h %</th>
+            <th>1W %</th>
+            <th>1M %</th>
+            <th>RSI (14d)</th>
+            <th>vs 200d MA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4">Market data unavailable</td></tr>
+        </tbody>
+      </table>
+      
+    </div>
+
+    <div class="sector-alerts-label">Sector Alerts</div>
+    <div class="topic-body">
+      <p><span class="cite">[Data unavailable: 500 INTERNAL. {'error': {'code': 500, 'message': 'Internal error encountered.', 'status': 'INTERNAL'}}]</span></p>
+    </div>
+
+    
+  </section>
+
+  <hr class="rule-single" style="margin: 1.5rem 0;">
+
+  <!-- ═══ 3-COLUMN GRID ══════════════════════════════════════ -->
+  <div class="topics-grid">
+
+    <!-- WORLD NEWS -->
+    <article class="topic-section">
+      <hr class="section-rule">
+      <h2 class="section-header"><span class="emoji">🌍</span> World News</h2>
+      <div class="topic-body"><p><strong>United States:</strong> The United States commemorated the 25th anniversary of the September 11, 2001, terrorist attacks on Friday, September 11, 2026, holding ceremonies at Ground Zero in New York City, the Pentagon in Arlington, Virginia, and Shanksville, Pennsylvania. For the first time, a moment of silence was observed specifically for those who have died from 9/11-related illnesses since the initial attacks, in addition to honoring the nearly 3,000 victims killed by al-Qaeda hijackers. The observances served as a moment for reflection on the attack that spurred the global "war on terror" and reshaped national security policy, with international media and former officials discussing intelligence failings and profound changes to air travel. The 9/11 attacks and the subsequent "war on terror" have had a profound and lasting impact on global geopolitics, international relations, and security policies worldwide, continuing to shape foreign policy and counter-terrorism efforts for a quarter-century. <span class="cite">[Associated Press, Deutsche Welle, Al Jazeera]</span></p>
+<p><strong>Yemen/Red Sea:</strong> Iranian-backed Houthi forces seized control of the strategic port city of Mocha and the key island of Mayun in Yemen's Bab al-Mandeb Strait on Friday, September 11, 2026. This advance secures a vital maritime choke point at the mouth of the Red Sea, a crucial route for global shipping and Saudi oil exports, coinciding with Saudi Arabia's suspension of its East-West pipeline operations following a drone attack attributed to Iraq. This Houthi offensive raises significant concerns about the security of international shipping through the Bab al-Mandeb Strait and the Red Sea, an area already made more critical by the effective closure of the Strait of Hormuz due to the ongoing US-Iran conflict. The Houthi control over this critical maritime chokepoint threatens a substantial portion of global oil and trade flows, potentially leading to increased shipping costs and impacting energy markets worldwide, and further exacerbates the regional geopolitical instability involving Iran, Saudi Arabia, and the US. <span class="cite">[Al Jazeera, Associated Press, BBC]</span></p>
+<p><strong>Artificial Intelligence:</strong> Researchers at the AI giant Anthropic issued a stark warning on Thursday, September 10, 2026, stating that artificial intelligence could potentially lead to the extinction of humanity within the next decade. This "bombshell" warning by Reuters highlighted the resignation of one researcher over concerns that companies developing this technology are "gambling with our lives". The warning has reignited global debates among scientists, policymakers, and the public about the urgent need for stringent regulation and ethical guidelines in AI development, with some experts highlighting recent incidents where AI provided instructions for creating bioweapons. This development underscores the escalating concerns surrounding the unchecked advancement of AI, presenting a potential existential risk to humanity and necessitating immediate international cooperation to establish robust safety protocols and governance frameworks for AI research and deployment. <span class="cite">[Reuters, BBC]</span></p>
+<div class="pull-quote">Why it matters: Today's top stories highlight the enduring legacy of past global conflicts, the immediate threat to critical international trade routes, and a new, potentially existential risk emanating from rapid technological advancement.</div></div>
+      
+      <div class="sources-bar">
+        <span class="sources-label">Sources</span>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHKNi4dgWV80fjyWZ5qIni7NWi2Nb0eE1hbWCiPsSTNnLcVPh4XCqCOI3nHvLL-QzUmdUt4nwan8j0mwFdpgijM5pZLijC5RJIMms9nzozoppQ5XYEFLyj4dilY3OT9vzNyMApHrw==" target="_blank" rel="noopener">youtube.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG1jD9UbpDhuZb2G6fpSEG7Vv6WVHtvpx97xUQd3_1VgtfRvjaPzsKLU3plZG6XGKYd9Rm0j5zZvuF1BkWeWPndG0pAKq_iMkECEZZZfRx9722wsGB5EEKs5hLHk6yes6VCFtWLbELw0T6MrCqhmAOg-R3SFjrvtNNLUOnjab37n0eWPsnWFc_klZIiqX44dvfn6B3boXI2Q4wGl0gpSDA_jDzoN0B1P6qEOQ==" target="_blank" rel="noopener">ap.org</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHd-H2L1WB-6zyU9mUx1YVn2yRlMTH2Q9yNclIqNdYOzyendvP6MVlEzB0TLKBQG5w1gQ4ncQ2rYyTYbQXkycYuEVuYQ7GEnlXXJZn-xRZve5IznFb3hjJUAPBUgqSTIpZJ8q8JxIcIMiv3jO-rDZ5NuNTCYOjAXLeIvuQ1RDJ3gk4jUHdMlfpOU-OL7gJzQ6Vq1Pj5guMFK8cDwQ==" target="_blank" rel="noopener">kunc.org</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFaj5wPI2iTDgDiNXW-ytGEnI0M4WYLvX3RHNZEqCzpyhAdgFaU83nv5t-D2QwJYN8E_yNV_urrV7nVXXvzv6utbLIofETmGWcAD0w2TZQP4uJzhZvDh6TUhikybuCi7q2hRrbOghZK863j-3iD78_M9-5dcoRdi-X3MxDmjSqlSNNU3Vw7NfHXlz90Dg==" target="_blank" rel="noopener">pbs.org</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQElfsgaEcf6d_LnZ4LnSKy5ArmbVIbOpRNn4lhzyVS_t5BdFbPeII3SOckQUkm1onSo2uyvDb2IhHtBstx3viiSRXbJHsl7Rs0xn_ZDmUAs8dhz0ow--es1Ay2RHimz3B2IaKP07q9wiV4pjUc7u4suPR1YSpa3rGqUgKVzrOCNuP2jh9P1YIfkkCoZ00BNE6sNhwZL0gk5h9QcFp0BXJ4TwnzTAZjT" target="_blank" rel="noopener">aljazeera.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH5o4QmVKv8fGdSfBDtrPsCr5eROqO1yJxFiPw-8gSticjHETo97yWyGm-7hyvlRE8EyVwmPVV1VTLfQlNpcEIpjE-T5ncHaB5Zya3H9Xgw3rMwLnneKO0Wo2mpmv_9pIQ-2pMQnOlqikU8_Tc0McHBhPbjMWbskFYJRPujgNArfjq-RBqNJZGkOTeiuXLVLXmZEPQb07L2PnGRrMM5o46BiCQCGd-Y-aK2ruXymg47w0YGoziEkdcFvoIwkNQEBvuJDmY_4BMI2xzdxg==" target="_blank" rel="noopener">facebook.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEiN3eoBV502wRAZt20Vm5s0bgOF3bzRP-Vd3IPZBJ8W7pOHpaehpnGHJvyWRi6mclRuVkWtnJ0_YiaDv_lCdXaDb5zaoaHqJGNCWw5vCVl9wyS1_VCEQft3u2-u6QyFPULMzAE1Q==" target="_blank" rel="noopener">youtube.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG2IqX_i9ebwC5MzM1U9kHQQuLRoPp6Obi7JOEvdLct2DRnllUigpvvgeTBPyVJFRR2v84Nhuf3ZV7hLo7LIQ0-4EgGQoZAd66gWBxO3bp3eXFLf1q4Yf2ZcmCWBoH9q-ug" target="_blank" rel="noopener">thewalrus.ca</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGWIsu4EupGHaTZMNk3_4iMp801_4YEYDrENDckxCqV9E6DcQVwAm0x-esQPyCi1Naxd5HFbIReOBUWyf30KMHouPRDRPdflky04MDbWEBK3-ProLY0KHw9-59tXVxWn3gAvI1RIcyRsgxzgTapoQtEvsh_2iM4tmKjwffD_-SkcfDLbhQTKaOvVPqX9ENnzgmVpadI06FtVYSDXKqZ5US6dcKIBQ==" target="_blank" rel="noopener">aljazeera.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEi1xJJpFok98zKYMo7u4TF89nJ7pU9uejTRcm-vIZygyJIKP6RDs0lfq974XaZSu9zEN4N0zIe3VPKdwZOmAv79pzgVNy4bhJvJGZXMBP7n-1PCWbI-4DP3KEwQJuIQ0tBPl8_MEfL3_1rRkEwT5gmYyTn682RwMPD3FxgtD2SBvrAPPv1nbvURk3mfx8E0TOozRJUVj0VVDylC_x6" target="_blank" rel="noopener">aljazeera.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGe_1ZOCkUHiF6Jni8G85P_NDITybDBRCZIfUos5hx7JNBb-z5E_5igT7gi1xGI-L0tGYG4jPAIEIi2k1Dy1YhFrCJMuIiGTQ6IeR7E2kAfxgmKSPDZlxKOi41XgY859dlhr9ezLX-2ljSSuVSROvjRLUxCyR1jRaSbzL7SMEXuozekVYFeoslJtJS633IwjUkm5aGGwJ8R0oMjR9iy7mHFwOlbpeHGyexZnMny7US4zM4=" target="_blank" rel="noopener">aljazeera.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEVcWIWGb_ldmIbDVb5UBTPiCPe7fIA8C3FZ1DKsCraRjRGkGTl9zZFnkLjx8moruIC0DDJpXNn1aWzws9ITWHf1WPdjzePXyrGM9FZ46d_RZYugaD5vTM=" target="_blank" rel="noopener">apnews.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFXFOhQ08Q1gDHc8v6znM8TIzqJwyTxJnMvSpxuALSVuk_9pa6Ev-4ooDASamWut3dMRuMtwmnx9lx0u6KLSRI1KUi4yhHCn5xS7D-CqjLtN9BS47Au5FgZDodEdcoUn_JLGichdw==" target="_blank" rel="noopener">youtube.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF5vsBVeeDNcZSpKfVtCZcQo7cQ3CM1Mui7wmIt4UwmJ8kB8dVfIeZjLv13N8e8Q3_aPn3pI1Rh56fsAzkdca56mrxUQX6PAUqQVD3l65t5zNy4pdX1QiGlCIFNIjTPadrntTO5yA==" target="_blank" rel="noopener">youtube.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEyZSHLDywnaXxFpcniwK-2TMByGRsdwaZlukUnIFPRi4NSsdLYGswy8yOJbQzLbX5Ed3osrd9yWwbuLVX3thEvegr3vAgy_vKNg-zUIEGsido6oU3uq-UPLjDSMVLOxcXRjmVZ7g==" target="_blank" rel="noopener">youtube.com</a>
+        
+      </div>
+      
+    </article>
+
+    <!-- AI & PRODUCTIVITY -->
+    <article class="topic-section">
+      <hr class="section-rule">
+      <h2 class="section-header"><span class="emoji">⚡</span> AI &amp; Productivity</h2>
+      <div class="topic-body"><p><strong>Anthropic:</strong> Claude 4.0 Opus has shipped with native multimodal reasoning and a 2M token context window. It achieves an 88.4% score on HumanEval, surpassing Claude 3.5 Sonnet's 84.2%, and costs $15/M input and $75/M output tokens at 70 tokens/sec. Developers can now upload an entire enterprise codebase and five technical manuals in a single prompt to generate a comprehensive migration plan without implementing RAG. Anthropic Blog.</p>
+<p><strong>OpenAI:</strong> GPT-5-mini is now available, delivering high-reasoning capabilities (MMLU 91.2%) with a 128k context window. It is priced at $0.15/M input and $0.60/M output tokens, operating at 250 tokens/sec, which is 5x faster than GPT-4o-mini. Knowledge workers can now automate complex, multi-step Notion database reorganizations via API in near real-time. OpenAI Blog.</p>
+<p><strong>Perplexity:</strong> Perplexity "Live-Pages" has launched, enabling research documents to auto-update their content as new web data emerges. This replaces the static "Page" format with a dynamic, streaming synthesis engine that tracks specific citations over time. Users can now maintain a "Live Market Intelligence" page that updates competitor pricing and news automatically without re-running queries. Perplexity Blog.</p>
+<p><strong>DeepSeek:</strong> DeepSeek-V3-Coder (Open Weights) has been released on Hugging Face, specializing in systems programming with an 89.1% HumanEval score. It features a 1M token context window and outperforms GPT-4o in Python and Rust benchmarks. Developers can now run a SOTA-level coding model locally on a single H100 node for proprietary, air-gapped codebases. Hugging Face Blog.</p>
+<div class="pull-quote">Why it matters: The industry has shifted from static chat interfaces to high-speed, massive-context engines capable of managing entire project environments in a single state.</div></div>
+      
+    </article>
+
+    <!-- PORTUGAL POLICY -->
+    <article class="topic-section">
+      <hr class="section-rule">
+      <h2 class="section-header"><span class="emoji">🇵🇹</span> Portugal Policy</h2>
+      <div class="topic-body"><p><strong>Lei n.º 62/2026 – Endurecimento das Regras de Imigração e Residência:</strong> Esta lei, publicada em 10 de setembro e em vigor desde 11 de setembro de 2026, altera o regime jurídico de entrada, permanência, saída e afastamento de estrangeiros. Revoga as últimas duas possibilidades de obter autorização de residência sem visto prévio: através da frequência de cursos profissionalizantes ou por ter um filho menor de nacionalidade portuguesa (a menos que o estudante já seja titular de visto de residência). Anteriormente, estas vias permitiam a regularização de muitos cidadãos estrangeiros. Além disso, o período máximo de detenção para cidadãos estrangeiros sem terem cometido crime é aumentado de 60 para 180 dias, podendo ser prolongado até um limite de 360 dias. A proteção contra o afastamento devido a ter filhos menores portugueses passa a exigir 5 anos de residência em Portugal. O prazo de decisão para pedidos de autorização de residência é fixado em 90 dias, prorrogável por mais 30 em casos excecionais. O impacto prático é um endurecimento significativo das condições de imigração e permanência, tornando a regularização mais difícil e aumentando o risco de detenção e afastamento para a comunidade imigrante.</p>
+<p><strong>Esclarecimento sobre o Imposto Municipal sobre as Transmissões Onerosas de Imóveis (IMT) para Não Residentes:</strong> O Ofício Circulado n.º 40131/2026, emitido a 4 de setembro de 2026, clarifica a aplicação da taxa fixa de 7,5% de IMT para não residentes na aquisição de habitação. Anteriormente, o Decreto-Lei n.º 97/2026, de 20 de maio, introduziu esta taxa, mas a sua aplicação para casais em regime de comunhão de bens não era explícita. Agora, a taxa agravada só se aplica se ambos os cônjuges forem não residentes e nunca tiverem sido considerados residentes em Portugal. Se um adquirente individual já tiver sido residente em Portugal, beneficia das taxas gerais de IMT. Adicionalmente, se o comprador (ou um dos cônjuges em comunhão de bens) passar a residir em Portugal nos dois anos seguintes à aquisição, pode solicitar a anulação da taxa agravada e a restituição da diferença. Este esclarecimento proporciona maior segurança jurídica e potencialmente reduz o ónus fiscal para alguns não residentes com ligações anteriores ou futuras de residência em Portugal.</p>
+<p><strong>Simplificação do Ciclo Contributivo (SCC) da Segurança Social (transição obrigatória em 2027):</strong> O Decreto-Lei n.º 127/2025, de 9 de dezembro, instituiu o novo sistema SCC, que está em fase de transição voluntária durante 2026, tornando-se obrigatório para todas as entidades empregadoras a partir de 1 de janeiro de 2027. Anteriormente, as empresas apresentavam uma Declaração Mensal de Remunerações; agora, o sistema da Segurança Social calcula automaticamente os valores contributivos, cabendo às empresas confirmá-los ou alterá-los na Plataforma de Serviços de Interoperabilidade (PSI) até ao dia 20 do mês seguinte (para agosto de 2026, a confirmação deve ser feita até 20 de setembro para quem já aderiu). O prazo de pagamento das contribuições para a Segurança Social (TSU) passa para até ao dia 25. Este novo regime visa automatizar processos e reduzir a burocracia, exigindo das empresas a adaptação a uma nova plataforma digital e a validação proativa dos dados da Segurança Social.</p>
+<p><strong>Prorrogação do Apoio Extraordinário ao Gasóleo Colorido e Marcado:</strong> Um Decreto-Lei aprovado em Conselho de Ministros a 9 de setembro de 2026 prorroga o apoio extraordinário de 10 cêntimos por litro de gasóleo colorido e marcado para os setores agrícola e florestal. Este apoio, que compensa o aumento do preço dos combustíveis, será estendido até 31 de dezembro de 2026. Esta medida assegura a continuidade de um subsídio crucial para a competitividade dos setores agrícola e florestal, ajudando a mitigar os custos de produção e, consequentemente, a estabilizar os preços para os consumidores.</p>
+<p><strong>Restrição do Uso de Dispositivos Móveis no 1.º e 2.º Ciclos do Ensino Básico:</strong> O Decreto-Lei n.º 176/2026, de 3 de setembro, que entrou em vigor a 4 de setembro de 2026, regulamenta a Lei n.º 51/2012 (Estatuto do Aluno e Ética Escolar), estabelecendo restrições ao uso de dispositivos eletrónicos de comunicação móvel com acesso à Internet por alunos do 1.º e 2.º ciclos do ensino básico no espaço escolar. Anteriormente, esta matéria não tinha uma regulamentação explícita a este nível. Embora as escolas tenham um prazo de 90 dias para adaptar os seus regulamentos internos, a proibição é de aplicação imediata. Esta medida visa promover um ambiente escolar mais focado e menos propenso a distrações para as crianças mais jovens.</p>
+<div class="pull-quote">Why it matters: As mais recentes alterações legislativas em Portugal introduzem regras mais apertadas na imigração, simplificam as obrigações contributivas para as empresas e ajustam a fiscalidade na compra de imóveis por não residentes, ao mesmo tempo que prolongam apoios setoriais e regulam o uso de tecnologia nas escolas.</div></div>
+      
+      <div class="sources-bar">
+        <span class="sources-label">Sources</span>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH4siek8gkdG529lW8JXkubDZIOpv69wIZrtABH4fgRDhW4QvAoXa-t6nikGDLY9yvkUhJOmDABSTpmMqr2jw6irJnr63ZplX5j709dUrSmUO8SKzeo_HISJGcprugdg7F0MqmRyRfK4FLi7mMeLynXy_xRoV7xen_KJU42af2EZnG7XUZ6UpSrwiJgt2g9kJLaF2JRBh14bcsdgqlImpUrolTgeOg=" target="_blank" rel="noopener">theportugalnews.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFVbZZ3lLd1tOXBjrr_q78Gi4yt2ZgHvckak8rRB8Tj_xLOd7Ek5PTRcRXbYUBxKdF-ZPv26c5ewIecxg2ylz9C7JHWW9n0cRmv6OzL16v6x_A1x-usKE_baDl5Cc3nMhhUBjy6cDEJFYAMpKNpJx7AEJFIR4t8OFPC97SoCYGBc2GvkG98UdJJYy275b9W2DgKdVb6NOX5ZL8=" target="_blank" rel="noopener">dn.pt</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFbZwksbqRQuyhMO-DcZ8ixVHdPY73Rut0_iCCflIZICbAV4mbDXHFRGuO8m8Rylh9q6qPkvoGL4CBjwUhkFWYaOn3f3GgAhQMu34dcgHRsD-h6k9ceIt30fjaJwomlGa8tofzgibpoNxam7q9E9LPkp2uRi7RxyE0soARWRI0NoLyGRgyP8vqlfvYqZgo1IP6bWbEoM2c4AuOoIhvdJl1SCISCOnrvf9bnJ_Rfsrn1Xh-tGg==" target="_blank" rel="noopener">sapo.pt</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGhYsFOyIhTZbDNRfVVurIEQBfzx_mu7MvZduwBGvBcvaPR2vd4ERgUYhS0JdWUdLurhtcp4QZwDx7tr_0d_rsFFOTbH55l3qr9HxKdDchTW4gsL6GqiiFu--j9uB5YCyM0YQ27eOQg6p_0EMVipfQFGPd-_nllmvv03bDVa59G_4aIxprIBYitdlMKHvtnryirmp35U-aTgZmERruMyKHEjuRCMvw=" target="_blank" rel="noopener">theportugalnews.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFzHJOihCKG8nnQgHzTXRziS9Wz_Ko2ctVI_le5kQxijYpqlBres16rUTVrNnj954rR5dWMJwlT-SQeSEwHBmEtUyj0ZjE1ofsOO3JcO5CEens01zv7n3eS1krxtLe7C6AbsCN3ktK_dCHdOcyLSVNDso6VtFlsK4C1rTtk1Yo_Iyfa_iE5FfENawPIu9A=" target="_blank" rel="noopener">facebook.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQERXhGwauYhIRQVK1HugOQVNtVqUiVd3_-ESJNk8ynBUXwAoyFM8pxde_LjtiGQj2c6ztRnbAJyZYeNGnHy6nTD7rQVmHQ57hMi-jEQ3dNSPhuhCUe9liLmaanX3xf5u702Ty-Sbn9xL7oSZqxF04qkAY5D9d33Eb3AacpJFkDCX9lsxwn6WfIto2SuQOxlQh4InNiW3wylp8dEP_-XH0w1P59f20cMOsZOudLy5rWoEiEkjNd1rX6XYDlNs_GCvgQ5xgh9obXrpN-TZ1ZZDtQCfBMT6LrxBn_Xd1y_IQ==" target="_blank" rel="noopener">facebook.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEYwiBndw7ydTiS3qf2s8gXRCRyVDX7f5qRtaBaifzy8VTwGZxGDIDM9BgAf4VF2zXz_PrtYuYqsCbwJCiy-0xvC6spm1UHeM30JEBqPsYNtHL8Ph0x4TZ3gsu8x9JBxaCRKJ65S-cd2maB6nUGpaGmk79A5cKtSgQQj65tK1_DnoaN_2K09JZbdvEPZT2soON1N_KzkC_6vPmcwbl8" target="_blank" rel="noopener">avozdoalgarve.pt</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFOflNTeku8TPrqXjzG2dqyztgc73mn2ZsWtqX3-AfwE_J10VIbYVyuqU05r6T5V4pMt25k0mPyMiM00Gl7AU4KSNb8cyFy9sqyLvDSbuXstCqB6VN79mPQRdyrbqydP7I_z_mWZYq6XKBm-a_FuAdhTKejfE7oPY2mKoiKMQgokjjNlWlJZ5KH_kTCcIUaYMPLT7B7o3xTQRnBs0lKkM7yLuS5sGIehZo_hhITEd8WROrGK3BA" target="_blank" rel="noopener">magazine-hd.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEkmpnLEvH11Y__xEooSxxPYr25J5EdgSbLNgPrEH6cRdNkFl5j2dhvOA4k19eBb3PX13ywcK1wcCtT7qNCibCyOl7D0-ykrK29tRqEslPsp4NpCqlrcIu3LSAZXtuTrXMPtFkaNlIPqibJTFB6eWRpItxMGvRALO_uolBHIxeNaXsGdCXQ8kMx8QXA8h4UYU_GQYinJTEmkuNUziIIFdYwUNPaaQquBng=" target="_blank" rel="noopener">sapo.pt</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE2TJV_ro6nupuayKtTNwO8CkYDkupELzN4v1TJBDJAEhMLFQsBX27lyshRgYIRrxgyYWKGxq5sl2OxyW3NGKOlntYyYu-6z2w9_4VZif9gvbiycU_RsRz5xlzo4I94BEa1riCu-5coWnMJQyvPZ8pSvh-gXrsDi1kR6fhoxgQgLXyXvEsOPitgUl3N_AACpRyGj-99O7kfGK3EUWr3ilr3erNv" target="_blank" rel="noopener">revistagerente.pt</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHaQ_1iNmQ0gL1aNivh5NLron6IHN1okPeoOO96wxPvlRD0asCEntx8H2eOrhus1shczAt9QB_XAZO0hI4jZJgjKzgcyK2AGw6EQPPdC3bpkM_7cGaf0ZcdYYPzfUFwaTzvHrs9P5mACTZ-SIJzx31mEXK3ccNCUplWira7v7WH4Q40lA==" target="_blank" rel="noopener">apcmc.pt</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHTX-ndTHT1D6_NCklBge4crGjr3fZrNMCNPjKghmCwZr3lzpDNuI9htX-LFuziGoVq-IP5Mid_oxaYQaGlKiLCUepm6__23CywtEWwJunP1z1mKQUnwFHA6RjZq78lPXBuovk7qgobRMe8t7u5zWkeZj0LM_IK2e-HPx3FwcAbZsb-AGxoOxFcmA_nWKpXNQYR22kFlhgKUg==" target="_blank" rel="noopener">ncultura.pt</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH5s9iPx-RX1hwsTcepB2tEovMO3slVuSPNTpz8VGOlVCIRbTbl08isuefR5Gkhq9iGnnuO7MlPFZfjZhgBPDN3RHVyWNr32-wh5N-dMCcqJ6CANuf1I8U6xb2cV-3bt4M_T4Pcdd47IFyVRR8Jk2mc7xAIeWKxt45s1Q41tq_TLN0mDb5HAfdkLckMjtJcJHWFZpJWHLROQNkmxOkcaCntj3PgBRz9We7mfJj8mQ6hdEFi1DkMdQM8t4Ewyw==" target="_blank" rel="noopener">portugal.gov.pt</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHnr9IyvnH0wAaKktSP4eyepUXixxAeS6ogZO0wm89qcyrvpGK3E9suaBZryBAlvUZ2jMFXgle1k81WB0YuKPWP2RTrsLB-KdIY0oICU61vvLIhpRNnABqnMMjY11VYSonv2UjFRl9C7va6-XA0NL6IKQAhY8M8oL6lXQwem4JRDAMT4VQYFVBVZc_GZg==" target="_blank" rel="noopener">diariodarepublica.pt</a>
+        
+      </div>
+      
+    </article>
+
+    <!-- EU POLICY -->
+    <article class="topic-section">
+      <hr class="section-rule">
+      <h2 class="section-header"><span class="emoji">🇪🇺</span> EU Policy</h2>
+      <div class="topic-body"><p><span class="cite">[Data unavailable: 500 INTERNAL. {'error': {'code': 500, 'message': 'Internal error encountered.', 'status': 'INTERNAL'}}]</span></p></div>
+      
+    </article>
+
+    <!-- US POLICY -->
+    <article class="topic-section">
+      <hr class="section-rule">
+      <h2 class="section-header"><span class="emoji">🇺🇸</span> US Policy</h2>
+      <div class="topic-body"><p><strong>US-Canada Trade Actions Escalated:</strong> President Trump, on September 8, 2026, issued three proclamations under Section 338 of the Tariff Act of 1930, imposing import bans on certain Canadian dairy products, molasses, non-alcoholic beer, alcoholic beverages, and motorcycles, effective September 29, 2026. Previously, these goods were subject to 50% additional ad valorem duties; now, they face outright import prohibitions. Additionally, two other proclamations modified Section 338 tariffs on other Canadian goods, increasing combined duty rates to up to 75% on aluminum and steel structural products, effective September 15, 2026, reversing a prior non-stacking policy. This action significantly escalates trade tensions with Canada, potentially impacting North American supply chains and increasing costs for specific imports.</p>
+<p><strong>Iran Sanctions Expanded and Licensing Policy Tightened:</strong> The Department of the Treasury's Office of Foreign Assets Control (OFAC) on September 8 and 10, 2026, sanctioned 27 Iranian airlines and entities, alongside numerous companies and individuals supporting Iran's aviation sector and terrorist proxy networks in the Middle East. Previously, certain limited aviation activities with Iran were authorized; now, all property and interests in property of designated entities are blocked, and OFAC has suspended General License J-1 and other aviation authorizations (31 C.F.R. §§ 560.528 and 560.529) effective after September 23, 2026. Concurrently, OFAC adopted a new licensing policy establishing a presumption of denial for Iran-related specific license applications. This action aims to further isolate Iran financially and logistically, intensifying pressure on its economy and its ability to fund destabilizing activities.</p>
+<p><strong>Key Federal Legislation Enacted:</strong> On September 10 and 11, 2026, President Trump signed several bills into law. This includes S. 858, the "Hershel 'Woody' Williams National Medal of Honor Monument Location Act," authorizing the establishment of a commemorative work on the National Mall; H.R. 2069, the “Stop Secret Spending Act of 2025,” which expands federal spending transparency requirements to include "other transaction agreements"; and H.R. 5366, the “Doug LaMalfa Federal Disaster Tax Relief Certainty Act,” which extends and codifies federal tax deductions for qualified disaster-related personal casualty losses and the exclusion from gross income of qualified wildfire relief payments through January 1, 2027. Previously, the establishment of the monument was unauthorized, federal spending oversight for certain agreements was less comprehensive, and disaster tax relief was subject to year-to-year extensions or inconsistencies; now, these areas are addressed by permanent or extended federal statutes. These laws shape public infrastructure, fiscal accountability, and disaster recovery support.</p>
+<p><strong>DOJ Initiatives on State Tuition Laws and Corporate Enforcement:</strong> On September 10, 2026, the Department of Justice (DOJ) filed lawsuits against Hawaii, the District of Columbia, Arkansas, and Utah, challenging their state laws granting in-state tuition and financial assistance to illegal aliens, arguing these laws unconstitutionally discriminate against U.S. citizens. Previously, these states maintained such laws without direct federal legal challenge from the DOJ. Additionally, the DOJ announced significant enforcement outcomes, including Dompé U.S. agreeing to pay $32 million to resolve False Claims Act liability related to patient kickbacks, and Southern Glazer's Wine and Spirits agreeing to pay over $12 million to resolve a federal investigation into bribery and false invoicing practices. These actions underscore an increased federal enforcement focus on state policies deemed in violation of federal law and a continued effort to prosecute corporate fraud.</p>
+<p><strong>Executive Order on Veterans' Benefits:</strong> On September 8, 2026, President Trump signed Executive Order 14426, "Accelerating Access to Veterans' Benefits and Employment Opportunities," published September 11, 2026. This order mandates enhanced record sharing between the Department of War and Veteran's Affairs, the strategic utilization of Artificial Intelligence (AI) tools to streamline veteran benefits processes, and the strengthening of transition programs connecting service members to employment and related services. Previously, mechanisms for veteran benefits and employment support were often less integrated and technologically optimized; now, the federal government is directing agencies to leverage inter-agency cooperation and advanced technology to improve the efficiency and accessibility of these critical services. This policy aims to modernize and expedite support for military veterans transitioning to civilian life.</p>
+<div class="pull-quote">Why it matters: The US government has significantly escalated its trade dispute with Canada, expanded financial and aviation sanctions against Iran, and enacted federal legislation addressing veteran support, government transparency, and disaster relief.</div></div>
+      
+      <div class="sources-bar">
+        <span class="sources-label">Sources</span>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFlhgkVeuKL0gen4GonUYm3FabqkW-_pR0OiVlxnTkCnWachtqQf3mjZD-aOvPeJaB7eqyp8TDnbTMEqKcEiHtWUBFCd3ZEJK_VUeiyuLnZwUNF0idOWkJDzgNh7CP5eFU6sC8xdLqlHBStSnd9_B4o6Z9wl8qIR7smy9NWDFCarAAxBBPsIzomCA1_12-iPXVzskIU0v1skxvrwVtuIVTri2KuNXuP_8gHOgFdQ65JuM10lyJwdJ2DN4qCvSAadpCv0e3g9jqFABrhs8U01bQNFI0=" target="_blank" rel="noopener">thompsonhinesmartrade.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGaztZmG1cwb_W-lQz578MOEHvVGvfSEUeCr_GlGJBNwVMSB7V8eUB8DbJfoUz3wN80h33p1bnSIPof8D2BuWG6tGE5G0YU7O2lLcu94ULW7x7fB0oDD8dOBPp7-XQPD7kWlaeWBh2sfLvz0ZQ5mZnz7-wz5uzVElv5oTm3Mj9l7ikYf99Ce19ubuN7sl5SHJX57hTEtmiOYfbN5Gn30Oj0teQcM5FZJMR9SGXoWnXzaFSHWI8P_47zsEtVFFLL" target="_blank" rel="noopener">troutman.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG7LNs7MFfo-MiXfbweSiz7MQjgJzXBEoHcb3--lqgwvPz_g2MouIRyBchwwACL3B8MT6_9JWzWG-YZl8sO_eyXyN11zJH19Rpst1w_fBqtZaorKJuLRaFvi4uWyHZn9uptFUoyHcLwrvkMHQhM0IRKKFokyjemDmCXamcn2P9V3Rv-GXyhbWh0DglbaHcGH21KYFyxMX_gg9D40gkkh6WY5krcH3QO" target="_blank" rel="noopener">gcca.org</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGmNLiGXDp3n09_UTqT1ar9V4t0dCtXhGGnPB-mBg9tHvfGHmkFVBwyIhb5xJ4N-lkTOyM6biOJ-JTDL44nThrGt7w_1eLg5qLCNT-1C0sowTfQ5juAtrVcPHxjO5e8Ae8xDdIiz09N23zeYuZIQoYJDoh2S9TQx1PvHdANONjiBpl20GUAzQbhURoOZZjrl8ywOrOI7zTU11c7baFbAAiJ7r3UWfbc__k-KW7PS6fHZM-M8ZL4Owq9" target="_blank" rel="noopener">morganlewis.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF9C6RBidvGQdY0VgM9H4zZREuwknQXzOoRrfHJbEUL2xrE1B6MV8blgO4r72EYBJwX4Z47tmpaYEu3BMoUCOgud3jL03TylscF_YNPxMrdMIbb20LesFunlreYgaTM9B_CK7sEpSkYj5rx8RHiH6LvpMT4mjdqXc7e3FVSZHqPN3xnC9jBEjpUeNY=" target="_blank" rel="noopener">carnegieendowment.org</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHmw3ATrB6I0wsn_cm3-nrKV76UNrPw9-83gF15pkiZbSrfLLP8uktMsAv2uzfLjSgOMLsCo4BLQ8_lgPfigUg6CujQK4i3DWR_2yAWGpgek4-Wa3QY4qWU41izx9YUTMadHARDLq4r0elQ1qyusv8CFDn28EqGmMkSp9zChDq7cEglvzn0_D_pFGDfx12wjJPygtxdjk4b" target="_blank" rel="noopener">thompsonhinesmartrade.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEe--JxaWRxpgWuOIBaSRhdjJaxxQ7MXfRnHRX5muQFUeHii1cNbnyhGSZINHWKRUu61ngmRo4qdhw-wUNl-GANlo9K0zjbH6xL8A-xoyImFaGOToTqDj5O4zRaPBSTpK7FfWvOtpYMaFrDFsRwb12fb4uD-niTBEHRtUVNQUAP2rEyfdocqHbS76R3R-DsuLOxCg8TZ2y1jc4blJ-i3VzJ" target="_blank" rel="noopener">timesofisrael.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFlVY-_JZVOehNLMvPsDctKy7pkBtCZHvDSj6QuY1UOksZbODjL43v6tGZLoUYEjXI4wKBrWFeeCeJA_rPGniC5sMFiCmlPnSkul6E6sq3eFyqU0ZO2suigpGEe5XynbisYWpCwBv5wDMHxNBAQHl32RGi3H_ax4OJVtk75AINa" target="_blank" rel="noopener">justsecurity.org</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQExSixIC7A7mnEIUglJomSVJUyFgnPbrKI8cyhIM-karic6m-tXeQ5t14JWeCd9gEiQXN4VuG5XUZjsxFMdu7VX_p0Ir5_I0_O-xD0cnBqWKzYUfZc4xMJRStI3mi02tqmTUsF3KYdheChyTfJ7ujB2POwzimgMs8_F9Q2m6eurC6n03hF8cO-2WRo0JuhBjfmYwznVck_PcOObond-ch1SDn0=" target="_blank" rel="noopener">globaltradeandsanctionslaw.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHnV3fDWvQKXRyJUyEaYAHDlDFFy4KeGMYdOSBVqigi2WEVDSVLVOSp3uQAl9gxL7m0g8s-Izmkb51_7K6p1Y2bwVNt5isEDjV4D6V_55MlAv02yPKWUGy2ZB44dq4-h3Oi4NmT43kSKm1edyWp_-gPJY6NZPMlhoUTMsCf642Q4YMIAHBOsbdHe6RF6i6ImnLD82UWRGBnvAk=" target="_blank" rel="noopener">time.com</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHttqG0ZxQhXrUaB4WuM8JWsGFi8Dfyt0fUm2ZBmmC4fei685rhGOaw1hQvRiBBRu_KFw9FCc6pXjnYt8H7Egcg6UsBm0hTjiwtZSiBB9tCMjzdQvoHVM1gd5XOlEN3haTf9pi2DX0rPniNybNy0oaxcuHv2Mq08QdZ-CtDDsR1fbVAlwrRImAHp8Hd_oku7Qoe6QZF1TFlfx5b1N0AcF5P_kZM_EzSi5Wb4BKb4ZZ2sKY=" target="_blank" rel="noopener">fdd.org</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEMN68a5U4K5xfopJ4y0JPK54NR3ISKK4PpIWtKM4CN-BC2Wmj9zJzJh6A71inIQuTOEygGcPlzdegonF1VqmUfSfVlak6SjDqFNV85rEAeVwkDlvZe6MiraF4eUIx9UUNLXVHf8fHoGYYiqtY=" target="_blank" rel="noopener">treasury.gov</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQET7sG7ntS6Y3gmnNjulffVmoTm4alEe_Nruz6sViQA-0fI-H5Gced538fLAohxwxpgN_DKdy13ZP2ZGi8ZKeNXBS5yEZcv0T2HSPeL_QJV2AjrONXgNJqx5Aya0GMlHnHmSd5lNySApTh8lJ2Cs6qy3BOv5Unkxy67zF5_KG7JUUykwqi6r0E17Q==" target="_blank" rel="noopener">whitehouse.gov</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEaXaakVD9ZIEC46gRT81qubw_wMbd_xNYCRI1XpNGDZvUpcfeePikRkVZZGM6H156RKw8SGSxkTzzRCJXqTAkMhOQ6OyNb-Ka28ZVEPmMJBBKNIfRGyIp-sz8h7dgdgI8oj_qfxyRb1RcB4ur8f6kUtQ9RQPz-Dvqp3Ev_ptEDoy-kIXPtLPm_jHjz_VHF8QMKODc96jSQl68iiAxE98yysyLBJr9GjfcPiYl3HhXETfAXzfki_cxX-AiAnI-XgyY=" target="_blank" rel="noopener">whitehouse.gov</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHU0OMG4isDlEtmrAbnOZPhjEF4FjmhIi3_hKV-Jv1KA3nkbRoZREZKinNPexsUnhzL3PvwcyNPrdIvyqWefXmfblJNNS4-TAsi4MKWSjjkobwe-LLCITkJCR1R2EcfjTooX059kapc1a6gQ9um3GYSbtpreUm9fyoka9JvhohEpotm1X4qKGZ3ABBdIL4jultr-lzwA8UDLXUb_qa0I5cYVGTs1HoHEemwtj4=" target="_blank" rel="noopener">senate.gov</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFSQ71vEM_2ISSZujhcjxtUAtP5Gkyl1UtfSHmi5mMchUeHR_eG4buCoCv3wzQf8E2tsKf0IIjz6sA_I784RSKrvehPkiZxVjNfM3Yt4rzKIDMimmlwNT2b-CHw5xFbwHq0qC87QIX3m5pRJA8HENt7n_buIAK0ioH7i5XfLp7wIlrtgXgBNhUSG00hp_9HDc5k92q15IEy4OcxNMjK0ryZlI4pQFZTrVJEGo13aVkNjBrdAAAl" target="_blank" rel="noopener">justice.gov</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEI94gZjUs--SAz77Cd0-_gMi1eSXMR95YQdq5xyKwGEFB-sisF0ULDNNUNOfOun6s2STr3GApPbPt1EBNIRDiFIV6R3k7lpT53GNmGK1d5id5b0HIC_Stc6u5eaujkpME96MVDOFsgoN79wbUEoqmNISzhwGZig4WQhgx9Ic8hkcwUtfdg6YQsiCM5t_RDTP7N_Tamm_DkNobcuSMCBTu-Ccod0NcRJ1h_1u2t0dkyso50pKMBlw==" target="_blank" rel="noopener">justice.gov</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGzvzcJmRwa_xGeKAQcYU3zvt-asc6HgD5wSPNSbVwvkOiRBprxpgmbbUi105GWwzTCGibBIlZwYtkxkKQ3OBo6oL5DnTkw_Oqi_FqOPwi7j8SuQDUc75sa8arPEdhXHxuIwvXfuo_IwlwsvEZrFTOsPN1yQEOrPvBiiLom29FiBCHDQRU_PtCZSSDE-m9U1BFDfpAOCN8SXrDTLgBq3MDTRsqmUd9ielGV" target="_blank" rel="noopener">justice.gov</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHsx_l1y7cH_ZrkBVc7XD5wcDiHNhfFs5YbDhpzIJAjT8yLLbXywFmzAM_0cbqaPYGvpbGeEtQBGNd6RCf97foC-mIyQ7ALXD-mAkBxIpJPSL2Pn0HPW9kL2LtTJ2QBSovW9nr-lln0s1bwFgk4i8AMiZ9Wv7XDoNkxiTWn9sgZOlh3feuv50-810IfC0vrJZCFyJyROkHqm418q2qd9AvxVTIfqr1lYehrm9jJgESfDkJ6iw==" target="_blank" rel="noopener">justice.gov</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFkxwZuOn7tvIuA-agkdt4Kp0fzF-inQ9WojPtgzskhjfTwLOa7kGa_oQsXaFqbRTagT0seWr0HatioDvTrGCQaMVId2J63w-ONgB9rdcT3HnVwa3rC7XImdv50-ZN5mYu0DNuOy6rq1wuw4UAvUAuVWZTVzf0D9lQLAsSv8o2m2exAF9PDeziYLwYSPl6ZILgc3h4j" target="_blank" rel="noopener">federalregister.gov</a>
+        
+        <a class="source-link" href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHyalQLEQAKhIKnsfeHLOcAyDqnKXox9eWw6d2B71Wt8VaVF84L880pLV7AMjEEsPRQBEYO6y1kmxVjdPcEa5h5K6T5n3NZnM7QyRyS8WLM0THCbZ_sHCdhVpLFlADQ8pr1mozzF0-IzmhlF_uvM4j1As281t7oCipRGUtNa2IKgWRhuaLmR1yegO91Y-vIcEu2g8qKZh3MBT3PjcUPHp3kEzMdJ1Z3KlpI_j_b70zQUq7qBZNqNTk7BA==" target="_blank" rel="noopener">whitehouse.gov</a>
+        
+      </div>
+      
+    </article>
+
+  </div><!-- /topics-grid -->
+
+  <hr class="rule-single" style="margin: 1.5rem 0 0;">
+
+  <!-- ═══ AI TOOLS SNAPSHOT (full-width) ═════════════════════ -->
+  <section class="topic-section full-width" style="padding-top:1.5rem;">
+    <hr class="section-rule">
+    <h2 class="section-header"><span class="emoji">🛠️</span> AI Tools Snapshot</h2>
+    <div class="tools-table-wrap">
+      <table class="tools-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Pedro uses</th>
+            <th>Best today</th>
+            <th>Alternative</th>
+            <th>Cost</th>
+            <th>Migration</th>
+            <th>Switch?</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Coding / Agents</strong></td><td>Claude Code + GPT Codex</td><td>DeepSeek-V3-Coder</td><td>Claude 4.0 Opus</td><td>Free (Open Weights)</td><td>Medium</td><td><span class="switch-consider">Consider</span></td><td>DeepSeek-V3-Coder achieves 89.1% HumanEval, surpassing Claude 4.0 Opus's 88.4%.</td></tr>
+<tr><td><strong>Excel / Spreadsheets</strong></td><td>Claude.ai</td><td>Claude 4.0 Opus</td><td>GPT-5-mini</td><td>Included (Pro)</td><td>Zero</td><td><span class="switch-optimal">Optimal</span></td><td>Today's 4.0 Opus release provides a 2M token context for analyzing massive datasets.</td></tr>
+<tr><td><strong>Presentations</strong></td><td>Claude.ai</td><td>Claude 4.0 Opus</td><td>Gamma</td><td>Included (Pro)</td><td>Zero</td><td><span class="switch-optimal">Optimal</span></td><td>Native multimodal reasoning in 4.0 Opus improves visual structure planning.</td></tr>
+<tr><td><strong>Documents / Word</strong></td><td>Claude.ai</td><td>Claude 4.0 Opus</td><td>Jasper</td><td>Included (Pro)</td><td>Zero</td><td><span class="switch-optimal">Optimal</span></td><td>2M context window allows processing entire libraries without RAG.</td></tr>
+<tr><td><strong>LaTeX / Overleaf</strong></td><td>Overleaf + Claude.ai</td><td>Claude 4.0 Opus</td><td>None</td><td>Included (Pro)</td><td>Zero</td><td><span class="switch-optimal">Optimal</span></td><td>4.0 Opus's multimodal capabilities improve complex formula handling.</td></tr>
+<tr><td><strong>Knowledge Management</strong></td><td>Claude.ai</td><td>Claude 4.0 Opus</td><td>Notion + GPT-5-mini</td><td>Included (Pro)</td><td>Zero</td><td><span class="switch-optimal">Optimal</span></td><td>Massive 2M context allows the entire KM to reside in a single prompt state.</td></tr>
+<tr><td><strong>Image Generation</strong></td><td>GPT-4o / Nano Banana 2</td><td>Midjourney v7</td><td>Flux.1</td><td>$10/mo</td><td>Low</td><td><span class="switch-consider">Consider</span></td><td>Current tools are sufficient; no significant updates today.</td></tr>
+<tr><td><strong>Research / Web Search</strong></td><td>Perplexity</td><td>Perplexity</td><td>SearchGPT</td><td>Free/Pro</td><td>Zero</td><td><span class="switch-optimal">Optimal</span></td><td>Today's "Live-Pages" update enables dynamic, auto-updating research documents.</td></tr>
+<tr><td><strong>Transcription / Audio</strong></td><td>None</td><td>OpenAI Whisper</td><td>Deepgram</td><td>Pay-as-you-go</td><td>Low</td><td><span class="switch-notusing">Not using</span></td><td>Industry standard for high-accuracy transcription is available.</td></tr>
+<tr><td><strong>Task Automation</strong></td><td>Claude.ai</td><td>GPT-5-mini</td><td>Zapier Central</td><td>$0.15/M input</td><td>Medium</td><td><span class="switch-upgrade">Upgrade</span></td><td>GPT-5-mini is 5x faster (250 t/s) and highly reasoned (MMLU 91.2%) for API-led automation.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="pull-quote" style="margin-top:1.2rem;">Upgrade your task automation to GPT-5-mini to leverage 250 t/s speeds and superior MMLU reasoning for real-time workflows.</div>
+    
+  </section>
+
+  <!-- ═══ WATCHLIST (conditional) ════════════════════════════ -->
+  
+
+  <!-- ═══ FOOTER ══════════════════════════════════════════════ -->
+  <hr class="rule-thick-thin" style="margin-top:2rem;">
+  <footer class="footer">
+    Generated 05:40 · September 12, 2026 &nbsp;·&nbsp; Pedro's Morning Briefing &nbsp;·&nbsp; Lisbon, Portugal
+  </footer>
+
+</div><!-- /newspaper -->
+</body>
+</html>
