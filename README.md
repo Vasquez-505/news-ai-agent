@@ -2,8 +2,6 @@
 
 ![Good Morning Sunshine cover](cover_ai_newspaper.png)
 
-> *"The world generates a lot of noise. This is the signal."*
-
 A fully automated personal intelligence system that fetches, analyses, and delivers a daily morning briefing across 7 curated topics, deployed on a zero-cost stack, delivered via Telegram, and readable as a newspaper-style HTML dashboard.
 
 ---
